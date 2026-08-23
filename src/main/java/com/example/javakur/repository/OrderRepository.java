@@ -42,4 +42,37 @@ public class OrderRepository extends BaseRepository<FoodOrder, Long> {
             em.close();
         }
     }
+
+    public List<FoodOrder> findByRestaurantId(Long restaurantId) {
+        EntityManager em = getEntityManager();
+        try {
+            return em.createQuery(
+                            "SELECT o FROM FoodOrder o "
+                                    + "JOIN FETCH o.client JOIN FETCH o.restaurant "
+                                    + "WHERE o.restaurant.id = :restaurantId ORDER BY o.createdAt DESC",
+                            FoodOrder.class)
+                    .setParameter("restaurantId", restaurantId)
+                    .getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    public Optional<FoodOrder> findOwnedByRestaurantOwner(Long orderId, Long ownerId) {
+        EntityManager em = getEntityManager();
+        try {
+            return em.createQuery(
+                            "SELECT o FROM FoodOrder o "
+                                    + "JOIN FETCH o.restaurant r JOIN FETCH r.owner "
+                                    + "JOIN FETCH o.client LEFT JOIN FETCH o.driver "
+                                    + "WHERE o.id = :orderId AND r.owner.id = :ownerId",
+                            FoodOrder.class)
+                    .setParameter("orderId", orderId)
+                    .setParameter("ownerId", ownerId)
+                    .getResultStream()
+                    .findFirst();
+        } finally {
+            em.close();
+        }
+    }
 }
