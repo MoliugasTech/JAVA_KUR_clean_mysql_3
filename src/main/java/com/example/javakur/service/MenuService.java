@@ -30,6 +30,14 @@ public class MenuService {
         return menuItemRepository.update(item);
     }
 
+    public MenuItem updateAvailability(MenuItem item, boolean available) {
+        if (item == null || item.getId() == null) {
+            throw new ValidationException("Persisted menu item is required");
+        }
+        item.setAvailable(available);
+        return menuItemRepository.update(item);
+    }
+
     public List<MenuItem> findByRestaurant(Restaurant restaurant) {
         return menuItemRepository.findByRestaurant(restaurant);
     }
