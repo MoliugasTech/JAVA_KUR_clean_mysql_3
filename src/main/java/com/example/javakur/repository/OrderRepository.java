@@ -1,6 +1,7 @@
 package com.example.javakur.repository;
 
 import com.example.javakur.model.FoodOrder;
+import com.example.javakur.model.OrderStatus;
 import jakarta.persistence.EntityManager;
 
 import java.util.List;
@@ -71,6 +72,66 @@ public class OrderRepository extends BaseRepository<FoodOrder, Long> {
                     .setParameter("ownerId", ownerId)
                     .getResultStream()
                     .findFirst();
+        } finally {
+            em.close();
+        }
+    }
+
+    public List<FoodOrder> findReadyForPickup() {
+        EntityManager em = getEntityManager();
+        try {
+            return em.createQuery(
+                            "SELECT o FROM FoodOrder o JOIN FETCH o.restaurant JOIN FETCH o.client "
+                                    + "WHERE o.status = :status AND o.driver IS NULL ORDER BY o.createdAt",
+                            FoodOrder.class)
+                    .setParameter("status", OrderStatus.READY_FOR_PICKUP)
+                    .getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    public Optional<FoodOrder> findReadyUnassignedById(Long orderId) {
+        EntityManager em = getEntityManager();
+        try {
+            return em.createQuery(
+                            "SELECT o FROM FoodOrder o JOIN FETCH o.restaurant JOIN FETCH o.client "
+                                    + "WHERE o.id = :orderId AND o.status = :status AND o.driver IS NULL",
+                            FoodOrder.class)
+                    .setParameter("orderId", orderId)
+                    .setParameter("status", OrderStatus.READY_FOR_PICKUP)
+                    .getResultStream().findFirst();
+        } finally {
+            em.close();
+        }
+    }
+
+    public List<FoodOrder> findActiveByDriverId(Long driverId) {
+        EntityManager em = getEntityManager();
+        try {
+            return em.createQuery(
+                            "SELECT o FROM FoodOrder o JOIN FETCH o.restaurant JOIN FETCH o.client "
+                                    + "WHERE o.driver.id = :driverId AND o.status IN :statuses "
+                                    + "ORDER BY o.createdAt",
+                            FoodOrder.class)
+                    .setParameter("driverId", driverId)
+                    .setParameter("statuses", List.of(OrderStatus.PICKED_UP, OrderStatus.DELIVERING))
+                    .getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    public Optional<FoodOrder> findOwnedByDriver(Long orderId, Long driverId) {
+        EntityManager em = getEntityManager();
+        try {
+            return em.createQuery(
+                            "SELECT o FROM FoodOrder o JOIN FETCH o.restaurant JOIN FETCH o.client "
+                                    + "JOIN FETCH o.driver WHERE o.id = :orderId AND o.driver.id = :driverId",
+                            FoodOrder.class)
+                    .setParameter("orderId", orderId)
+                    .setParameter("driverId", driverId)
+                    .getResultStream().findFirst();
         } finally {
             em.close();
         }
