@@ -34,6 +34,13 @@ public class MenuService {
         return menuItemRepository.findByRestaurant(restaurant);
     }
 
+    public List<MenuItem> findAvailableByRestaurant(Restaurant restaurant) {
+        if (restaurant == null || restaurant.getId() == null) {
+            throw new ValidationException("Persisted restaurant is required");
+        }
+        return menuItemRepository.findAvailableByRestaurant(restaurant);
+    }
+
     public Optional<MenuItem> findById(Long id) {
         if (id == null) throw new ValidationException("Menu item id is required");
         return menuItemRepository.findById(id);
@@ -44,4 +51,3 @@ public class MenuService {
         menuItemRepository.deleteById(id);
     }
 }
-
