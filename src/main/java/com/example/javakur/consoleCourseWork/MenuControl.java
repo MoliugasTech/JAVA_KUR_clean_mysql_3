@@ -7,10 +7,12 @@ import com.example.javakur.model.MenuItem;
 import com.example.javakur.model.Restaurant;
 import com.example.javakur.model.RestaurantType;
 import com.example.javakur.model.OrderStatus;
+import com.example.javakur.model.VehicleType;
 import com.example.javakur.security.UserSession;
 import com.example.javakur.service.AuthenticationService;
 import com.example.javakur.service.ClientConsoleService;
 import com.example.javakur.service.OwnerConsoleService;
+import com.example.javakur.service.DriverConsoleService;
 
 import java.io.BufferedReader;
 import java.io.PrintStream;
@@ -20,29 +22,32 @@ public class MenuControl {
     private final AuthenticationService authenticationService;
     private final ClientConsoleService clientConsoleService;
     private final OwnerConsoleService ownerConsoleService;
+    private final DriverConsoleService driverConsoleService;
     private final BufferedReader input;
     private final PrintStream output;
 
     public MenuControl(AuthenticationService authenticationService,
                        ClientConsoleService clientConsoleService,
                        OwnerConsoleService ownerConsoleService,
+                       DriverConsoleService driverConsoleService,
                        BufferedReader input, PrintStream output) {
         this.authenticationService = authenticationService;
         this.clientConsoleService = clientConsoleService;
         this.ownerConsoleService = ownerConsoleService;
+        this.driverConsoleService = driverConsoleService;
         this.input = input;
         this.output = output;
     }
 
     public MenuControl(AuthenticationService authenticationService,
                        BufferedReader input, PrintStream output) {
-        this(authenticationService, null, null, input, output);
+        this(authenticationService, null, null, null, input, output);
     }
 
     public MenuControl(AuthenticationService authenticationService,
                        ClientConsoleService clientConsoleService,
                        BufferedReader input, PrintStream output) {
-        this(authenticationService, clientConsoleService, null, input, output);
+        this(authenticationService, clientConsoleService, null, null, input, output);
     }
 
     public void run() {
@@ -53,17 +58,37 @@ public class MenuControl {
             output.println("1 - Prisijungti");
             output.println("2 - Registruotis kaip klientui");
             output.println("3 - Registruotis kaip restorano savininkui");
+            output.println("4 - Registruotis kaip vairuotojui");
             output.println("0 - Baigti darbą");
             int choice = Utils.readChoice(input, output, "Pasirinkimas: ");
             switch (choice) {
                 case 1 -> login();
                 case 2 -> registerClient();
                 case 3 -> registerOwner();
+                case 4 -> registerDriver();
                 case 0 -> running = false;
                 default -> output.println("Neteisingas pasirinkimas.");
             }
         }
         output.println("Programa baigta.");
+    }
+
+    private void registerDriver() {
+        output.println("--- VAIRUOTOJO REGISTRACIJA ---");
+        String username = Utils.readLine(input, output, "Vartotojo vardas: ");
+        String password = Utils.readLine(input, output, "Slaptažodis (bent 8 simboliai): ");
+        String name = Utils.readLine(input, output, "Vardas: ");
+        String surname = Utils.readLine(input, output, "Pavardė: ");
+        String email = Utils.readLine(input, output, "El. paštas: ");
+        output.println("Transporto tipai: " + java.util.Arrays.toString(VehicleType.values()));
+        try {
+            VehicleType vehicleType = VehicleType.valueOf(
+                    Utils.readLine(input, output, "Transporto tipas: ").toUpperCase());
+            driverConsoleService.register(username, password, name, surname, email, vehicleType);
+            output.println("Vairuotojo registracija sėkminga. Dabar galite prisijungti.");
+        } catch (RuntimeException e) {
+            output.println("Registracija nepavyko: " + e.getMessage());
+        }
     }
 
     private void registerOwner() {
@@ -138,6 +163,10 @@ public class MenuControl {
             executeOwnerChoice(session, choice);
             return;
         }
+        if (session.role() == UserRole.DRIVER) {
+            executeDriverChoice(session, choice);
+            return;
+        }
         if (session.role() != UserRole.CLIENT) {
             output.println("Ši funkcija bus prijungta kitame etape.");
             return;
@@ -153,6 +182,63 @@ public class MenuControl {
         } catch (ValidationException e) {
             output.println("Veiksmas nepavyko: " + e.getMessage());
         }
+    }
+
+    private void executeDriverChoice(UserSession session, int choice) {
+        try {
+            switch (choice) {
+                case 1 -> showReadyOrders();
+                case 2 -> pickUpOrder(session.userId());
+                case 3 -> showActiveDeliveries(session.userId());
+                case 4 -> changeDeliveryStatus(session.userId());
+                case 5 -> output.println("Atsiliepimai bus prijungti M13 etape.");
+                default -> output.println("Neteisingas pasirinkimas.");
+            }
+        } catch (RuntimeException e) {
+            output.println("Veiksmas nepavyko: " + e.getMessage());
+        }
+    }
+
+    private void showReadyOrders() {
+        List<FoodOrder> orders = driverConsoleService.listReadyOrders();
+        if (orders.isEmpty()) output.println("Pristatymui paruoštų užsakymų nėra.");
+        else printOrders(orders);
+    }
+
+    private void pickUpOrder(Long driverId) {
+        List<FoodOrder> orders = driverConsoleService.listReadyOrders();
+        if (orders.isEmpty()) {
+            output.println("Pristatymui paruoštų užsakymų nėra.");
+            return;
+        }
+        printOrders(orders);
+        FoodOrder order = selectedItem(orders,
+                Utils.readChoice(input, output, "Užsakymo numeris (0 - grįžti): "));
+        if (order == null) return;
+        FoodOrder pickedUp = driverConsoleService.pickUpOrder(driverId, order.getId());
+        output.println("Užsakymas paimtas. Būsena=" + pickedUp.getStatus());
+    }
+
+    private void showActiveDeliveries(Long driverId) {
+        List<FoodOrder> orders = driverConsoleService.listActiveDeliveries(driverId);
+        if (orders.isEmpty()) output.println("Aktyvių pristatymų nėra.");
+        else printOrders(orders);
+    }
+
+    private void changeDeliveryStatus(Long driverId) {
+        List<FoodOrder> orders = driverConsoleService.listActiveDeliveries(driverId);
+        if (orders.isEmpty()) {
+            output.println("Aktyvių pristatymų nėra.");
+            return;
+        }
+        printOrders(orders);
+        FoodOrder order = selectedItem(orders,
+                Utils.readChoice(input, output, "Užsakymo numeris (0 - grįžti): "));
+        if (order == null) return;
+        OrderStatus status = OrderStatus.valueOf(
+                Utils.readLine(input, output, "Nauja būsena (DELIVERING/COMPLETED): ").toUpperCase());
+        FoodOrder updated = driverConsoleService.changeDeliveryStatus(driverId, order.getId(), status);
+        output.println("Pristatymo būsena pakeista į " + updated.getStatus());
     }
 
     private void executeOwnerChoice(UserSession session, int choice) {
@@ -403,8 +489,9 @@ public class MenuControl {
                     "Keisti užsakymo būseną");
             case DRIVER -> List.of(
                     "Pristatymui paruošti užsakymai",
-                    "Mano pristatymas",
-                    "Keisti pristatymo būseną ir žinutės",
+                    "Paimti užsakymą",
+                    "Mano aktyvūs pristatymai",
+                    "Keisti pristatymo būseną",
                     "Palikti atsiliepimą klientui");
             case ADMIN -> List.of(
                     "Valdyti vartotojus",
