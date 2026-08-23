@@ -2,20 +2,27 @@ package com.example.javakur.service;
 
 import com.example.javakur.exception.ValidationException;
 import com.example.javakur.model.Client;
+import com.example.javakur.model.Driver;
 import com.example.javakur.model.FoodOrder;
 import com.example.javakur.model.MenuItem;
 import com.example.javakur.model.OrderItem;
+import com.example.javakur.model.OrderStatus;
 import com.example.javakur.model.Restaurant;
 import com.example.javakur.repository.OrderRepository;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDateTime;
+import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Optional;
 
 public class OrderService {
     private static final int MONEY_SCALE = 2;
+    private static final Map<OrderStatus, EnumSet<OrderStatus>> ALLOWED_TRANSITIONS =
+            createAllowedTransitions();
 
     private final OrderRepository orderRepository;
 
@@ -63,6 +70,55 @@ public class OrderService {
         return orderRepository.findDetailedById(id);
     }
 
+    public FoodOrder changeStatus(FoodOrder order, OrderStatus newStatus) {
+        validatePersistedOrder(order);
+        if (newStatus == null) throw new ValidationException("New order status is required");
+
+        OrderStatus currentStatus = order.getStatus();
+        if (currentStatus == newStatus) {
+            throw new ValidationException("Order already has status " + newStatus);
+        }
+        if (newStatus == OrderStatus.PICKED_UP) {
+            throw new ValidationException("Use assignDriver to pick up an order");
+        }
+
+        EnumSet<OrderStatus> allowed = ALLOWED_TRANSITIONS.getOrDefault(
+                currentStatus, EnumSet.noneOf(OrderStatus.class));
+        if (!allowed.contains(newStatus)) {
+            throw new ValidationException(
+                    "Invalid order status transition: " + currentStatus + " -> " + newStatus);
+        }
+
+        order.setStatus(newStatus);
+        if (newStatus == OrderStatus.COMPLETED) {
+            order.setCompletedAt(LocalDateTime.now());
+        }
+        return orderRepository.update(order);
+    }
+
+    public FoodOrder assignDriver(FoodOrder order, Driver driver) {
+        validatePersistedOrder(order);
+        if (driver == null || driver.getId() == null) {
+            throw new ValidationException("Persisted driver is required");
+        }
+        if (order.getStatus() != OrderStatus.READY_FOR_PICKUP) {
+            throw new ValidationException("Driver can only pick up a READY_FOR_PICKUP order");
+        }
+        if (order.getDriver() != null) {
+            throw new ValidationException("Order already has a driver");
+        }
+
+        order.setDriver(driver);
+        order.setStatus(OrderStatus.PICKED_UP);
+        return orderRepository.update(order);
+    }
+
+    private void validatePersistedOrder(FoodOrder order) {
+        if (order == null || order.getId() == null) {
+            throw new ValidationException("Persisted order is required");
+        }
+    }
+
     private void validateParticipants(Client client, Restaurant restaurant) {
         if (client == null || client.getId() == null) {
             throw new ValidationException("Persisted client is required");
@@ -95,5 +151,20 @@ public class OrderService {
                 || !restaurant.getId().equals(menuItem.getRestaurant().getId())) {
             throw new ValidationException("All order items must belong to the selected restaurant");
         }
+    }
+
+    private static Map<OrderStatus, EnumSet<OrderStatus>> createAllowedTransitions() {
+        Map<OrderStatus, EnumSet<OrderStatus>> transitions = new EnumMap<>(OrderStatus.class);
+        transitions.put(OrderStatus.CREATED,
+                EnumSet.of(OrderStatus.CONFIRMED, OrderStatus.CANCELLED));
+        transitions.put(OrderStatus.CONFIRMED,
+                EnumSet.of(OrderStatus.PREPARING, OrderStatus.CANCELLED));
+        transitions.put(OrderStatus.PREPARING,
+                EnumSet.of(OrderStatus.READY_FOR_PICKUP, OrderStatus.CANCELLED));
+        transitions.put(OrderStatus.PICKED_UP,
+                EnumSet.of(OrderStatus.DELIVERING));
+        transitions.put(OrderStatus.DELIVERING,
+                EnumSet.of(OrderStatus.COMPLETED));
+        return transitions;
     }
 }
