@@ -46,18 +46,9 @@ public class OrderMessageService {
         if (sender == null || sender.getId() == null) {
             throw new ValidationException("Persisted sender is required");
         }
-        boolean client = sameUser(order.getClient(), sender);
-        boolean driver = sameUser(order.getDriver(), sender);
-        boolean owner = order.getRestaurant() != null
-                && sameUser(order.getRestaurant().getOwner(), sender);
-        if (!client && !driver && !owner) {
+        if (!messageRepository.isOrderParticipant(order.getId(), sender.getId())) {
             throw new ValidationException("User is not a participant of this order");
         }
-    }
-
-    private boolean sameUser(User expected, User actual) {
-        return expected != null && expected.getId() != null
-                && expected.getId().equals(actual.getId());
     }
 
     private String normalizeContent(String content) {
