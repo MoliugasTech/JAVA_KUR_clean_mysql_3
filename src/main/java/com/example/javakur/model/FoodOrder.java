@@ -70,7 +70,8 @@ public class FoodOrder {
         if (item.getMenuItem() == null || item.getMenuItem().getRestaurant() == null) {
             throw new IllegalArgumentException("Menu item must belong to a restaurant");
         }
-        if (!item.getMenuItem().getRestaurant().equals(restaurant)) {
+        if (restaurant == null || restaurant.getId() == null
+                || !restaurant.getId().equals(item.getMenuItem().getRestaurant().getId())) {
             throw new IllegalArgumentException("All order items must belong to the order restaurant");
         }
         items.add(item);
