@@ -100,6 +100,7 @@ class OrderMessageServiceTest {
         order.setId(5L);
         order.setDriver(driver);
         order.setStatus(OrderStatus.PICKED_UP);
+        repository.registerOrder(order);
         return order;
     }
 
@@ -125,6 +126,31 @@ class OrderMessageServiceTest {
             return messages.stream()
                     .filter(message -> message.getOrder().getId().equals(orderId))
                     .toList();
+        }
+
+        @Override
+        public boolean isOrderParticipant(Long orderId, Long userId) {
+            return messages.stream()
+                    .filter(message -> message.getOrder().getId().equals(orderId))
+                    .findFirst()
+                    .map(OrderMessage::getOrder)
+                    .map(order -> isParticipant(order, userId))
+                    .orElseGet(() -> isParticipant(activeOrderForLookup, userId));
+        }
+
+        private FoodOrder activeOrderForLookup;
+
+        void registerOrder(FoodOrder order) {
+            this.activeOrderForLookup = order;
+        }
+
+        private boolean isParticipant(FoodOrder order, Long userId) {
+            if (order == null) return false;
+            boolean client = order.getClient() != null && userId.equals(order.getClient().getId());
+            boolean driver = order.getDriver() != null && userId.equals(order.getDriver().getId());
+            boolean owner = order.getRestaurant() != null && order.getRestaurant().getOwner() != null
+                    && userId.equals(order.getRestaurant().getOwner().getId());
+            return client || driver || owner;
         }
     }
 }
