@@ -46,6 +46,18 @@ public class Review {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    public Review(FoodOrder order, User author, ReviewType type, Restaurant restaurant,
+                  User reviewedUser, byte rating, String comment) {
+        this.order = order;
+        this.author = author;
+        this.type = type;
+        this.restaurant = restaurant;
+        this.reviewedUser = reviewedUser;
+        this.rating = rating;
+        this.comment = comment;
+        this.createdAt = LocalDateTime.now();
+    }
+
     @PrePersist
     protected void ensureCreatedAt() {
         if (createdAt == null) createdAt = LocalDateTime.now();
