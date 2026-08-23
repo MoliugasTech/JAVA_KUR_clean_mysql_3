@@ -1,4 +1,4 @@
-# M09 – Kliento konsolės scenarijus
+# M09 – Pradinė kliento konsolės integracija
 
 ## Tikslas
 
@@ -10,14 +10,16 @@ nuo registracijos iki sukurto užsakymo peržiūros.
 - Pradiniame meniu klientas gali užsiregistruoti.
 - Prisijungęs klientas mato restoranų sąrašą.
 - Pasirinkus restoraną rodomi tik prieinami meniu patiekalai.
-- Klientas gali sukurti vieno patiekalo užsakymą ir nurodyti kiekį.
+- Restoranas ir patiekalas pasirenkami pagal matomą sąrašo numerį, ne DB ID.
+- Klientas gali sukurti vieno patiekalo užsakymą, nurodyti kiekį ir jį patvirtinti.
+- Iš pasirinkimo galima saugiai grįžti neišsaugant užsakymo.
 - Klientas mato savo užsakymų ID, restoraną, būseną ir galutinę kainą.
 - Paieška pagal sesijos vartotojo ID neleidžia matyti kito kliento užsakymų.
 
 ## Etapo riba
 
-M09 užbaigia kliento pagrindinį kelią. M10 prijungs restorano savininko,
-vairuotojo ir administratoriaus veiksmus.
+M09 patikrina pirmą vertikalią kliento integraciją. Kelių patiekalų krepšelis ir
+galutinis užsakymo UX bus užbaigti po savininko bei vairuotojo konsolės srautų.
 
 ## Patikrinimas
 
