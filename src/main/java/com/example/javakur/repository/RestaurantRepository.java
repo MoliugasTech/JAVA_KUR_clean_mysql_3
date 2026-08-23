@@ -5,6 +5,7 @@ import com.example.javakur.model.RestaurantOwner;
 import jakarta.persistence.EntityManager;
 
 import java.util.List;
+import java.util.Optional;
 
 public class RestaurantRepository extends BaseRepository<Restaurant, Long> {
     public RestaurantRepository() {
@@ -18,6 +19,22 @@ public class RestaurantRepository extends BaseRepository<Restaurant, Long> {
                     "SELECT r FROM Restaurant r WHERE r.owner = :owner ORDER BY r.name", Restaurant.class)
                     .setParameter("owner", owner)
                     .getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    public Optional<Restaurant> findOwnedById(Long restaurantId, Long ownerId) {
+        EntityManager em = getEntityManager();
+        try {
+            return em.createQuery(
+                            "SELECT r FROM Restaurant r JOIN FETCH r.owner "
+                                    + "WHERE r.id = :restaurantId AND r.owner.id = :ownerId",
+                            Restaurant.class)
+                    .setParameter("restaurantId", restaurantId)
+                    .setParameter("ownerId", ownerId)
+                    .getResultStream()
+                    .findFirst();
         } finally {
             em.close();
         }
