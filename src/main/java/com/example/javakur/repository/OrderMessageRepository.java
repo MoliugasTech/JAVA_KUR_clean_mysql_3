@@ -24,4 +24,22 @@ public class OrderMessageRepository extends BaseRepository<OrderMessage, Long> {
             em.close();
         }
     }
+
+    public boolean isOrderParticipant(Long orderId, Long userId) {
+        EntityManager em = getEntityManager();
+        try {
+            Long count = em.createQuery(
+                            "SELECT COUNT(o) FROM FoodOrder o "
+                                    + "WHERE o.id = :orderId AND ("
+                                    + "o.client.id = :userId OR o.driver.id = :userId "
+                                    + "OR o.restaurant.owner.id = :userId)",
+                            Long.class)
+                    .setParameter("orderId", orderId)
+                    .setParameter("userId", userId)
+                    .getSingleResult();
+            return count > 0;
+        } finally {
+            em.close();
+        }
+    }
 }
