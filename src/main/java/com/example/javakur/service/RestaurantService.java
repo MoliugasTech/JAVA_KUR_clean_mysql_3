@@ -8,6 +8,7 @@ import com.example.javakur.repository.RestaurantRepository;
 
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 public class RestaurantService {
     private final RestaurantRepository restaurantRepository;
@@ -30,5 +31,14 @@ public class RestaurantService {
 
     public List<Restaurant> findByOwner(RestaurantOwner owner) {
         return restaurantRepository.findByOwner(owner);
+    }
+
+    public List<Restaurant> findAll() {
+        return restaurantRepository.findAll();
+    }
+
+    public Optional<Restaurant> findById(Long id) {
+        if (id == null) throw new ValidationException("Restaurant id is required");
+        return restaurantRepository.findById(id);
     }
 }
