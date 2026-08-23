@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -68,6 +69,11 @@ public class OrderService {
     public Optional<FoodOrder> findDetailedById(Long id) {
         if (id == null) throw new ValidationException("Order id is required");
         return orderRepository.findDetailedById(id);
+    }
+
+    public List<FoodOrder> findByClientId(Long clientId) {
+        if (clientId == null) throw new ValidationException("Client id is required");
+        return orderRepository.findByClientId(clientId);
     }
 
     public FoodOrder changeStatus(FoodOrder order, OrderStatus newStatus) {
