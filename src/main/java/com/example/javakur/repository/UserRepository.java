@@ -28,6 +28,20 @@ public class UserRepository extends BaseRepository<User, Long> {
         }
     }
 
+    public Optional<User> findByEmail(String email) {
+        EntityManager em = getEntityManager();
+        try {
+            return Optional.of(em.createQuery(
+                            "SELECT u FROM User u WHERE u.email = :email", User.class)
+                    .setParameter("email", email)
+                    .getSingleResult());
+        } catch (NoResultException e) {
+            return Optional.empty();
+        } finally {
+            em.close();
+        }
+    }
+
     public List<User> findByRole(UserRole role) {
         EntityManager em = getEntityManager();
         try {
