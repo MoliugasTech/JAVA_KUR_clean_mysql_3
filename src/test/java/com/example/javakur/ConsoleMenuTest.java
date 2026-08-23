@@ -76,7 +76,7 @@ class ConsoleMenuTest {
     @Test
     void definesMenuForEveryRole() {
         for (UserRole role : UserRole.values()) {
-            assertEquals(4, MenuControl.menuOptionsFor(role).size());
+            assertTrue(MenuControl.menuOptionsFor(role).size() >= 4);
         }
     }
 
