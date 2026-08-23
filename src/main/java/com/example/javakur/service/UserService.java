@@ -3,6 +3,8 @@ package com.example.javakur.service;
 import com.example.javakur.exception.ValidationException;
 import com.example.javakur.model.RestaurantOwner;
 import com.example.javakur.model.Client;
+import com.example.javakur.model.Driver;
+import com.example.javakur.model.VehicleType;
 import com.example.javakur.model.User;
 import com.example.javakur.repository.UserRepository;
 import com.example.javakur.util.PasswordUtil;
@@ -37,6 +39,20 @@ public class UserService {
                 username.trim(), PasswordUtil.hashPassword(plainPassword), name.trim(), surname.trim(),
                 email.trim(), deliveryAddress.trim());
         return (Client) userRepository.save(client);
+    }
+
+    public Driver createDriver(String username, String plainPassword, String name,
+                               String surname, String email, VehicleType vehicleType) {
+        validateCommonUserFields(username, plainPassword, name, surname, email);
+        if (vehicleType == null) {
+            throw new ValidationException("Vehicle type is required");
+        }
+        validateUniqueCredentials(username, email);
+
+        Driver driver = new Driver(
+                username.trim(), PasswordUtil.hashPassword(plainPassword), name.trim(), surname.trim(),
+                email.trim(), vehicleType);
+        return (Driver) userRepository.save(driver);
     }
 
     public List<User> getAllUsers() {
