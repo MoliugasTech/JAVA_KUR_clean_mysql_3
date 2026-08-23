@@ -129,28 +129,85 @@ public class MenuControl {
             return;
         }
         output.println("--- RESTORANAI ---");
-        restaurants.forEach(restaurant -> output.println(
-                restaurant.getId() + " - " + restaurant.getName() + " | " + restaurant.getType()));
-        int restaurantId = Utils.readChoice(input, output, "Restorano ID meniu peržiūrai (0 - grįžti): ");
-        if (restaurantId == 0) return;
-        List<MenuItem> items = clientConsoleService.listAvailableMenu((long) restaurantId);
+        printRestaurants(restaurants);
+        int restaurantChoice = Utils.readChoice(
+                input, output, "Restorano numeris meniu peržiūrai (0 - grįžti): ");
+        Restaurant restaurant = selectedItem(restaurants, restaurantChoice);
+        if (restaurant == null) return;
+        List<MenuItem> items = clientConsoleService.listAvailableMenu(restaurant.getId());
         if (items.isEmpty()) {
             output.println("Šis restoranas neturi prieinamų patiekalų.");
             return;
         }
         output.println("--- MENIU ---");
-        items.forEach(item -> output.println(
-                item.getId() + " - " + item.getName() + " | " + item.getPrice() + " EUR"));
+        printMenu(items);
     }
 
     private void createOrder(Long clientId) {
-        int restaurantId = Utils.readChoice(input, output, "Restorano ID: ");
-        int menuItemId = Utils.readChoice(input, output, "Patiekalo ID: ");
+        List<Restaurant> restaurants = clientConsoleService.listRestaurants();
+        if (restaurants.isEmpty()) {
+            output.println("Restoranų nėra.");
+            return;
+        }
+        output.println("--- PASIRINKITE RESTORANĄ ---");
+        printRestaurants(restaurants);
+        Restaurant restaurant = selectedItem(restaurants,
+                Utils.readChoice(input, output, "Restorano numeris (0 - grįžti): "));
+        if (restaurant == null) return;
+
+        List<MenuItem> items = clientConsoleService.listAvailableMenu(restaurant.getId());
+        if (items.isEmpty()) {
+            output.println("Šis restoranas neturi prieinamų patiekalų.");
+            return;
+        }
+        output.println("--- PASIRINKITE PATIEKALĄ ---");
+        printMenu(items);
+        MenuItem menuItem = selectedItem(items,
+                Utils.readChoice(input, output, "Patiekalo numeris (0 - grįžti): "));
+        if (menuItem == null) return;
+
         int quantity = Utils.readChoice(input, output, "Kiekis: ");
+        if (quantity <= 0) {
+            output.println("Kiekis turi būti didesnis už nulį.");
+            return;
+        }
+        output.println("Užsakymas: " + menuItem.getName() + " x " + quantity);
+        output.println("Numatoma suma: "
+                + menuItem.getPrice().multiply(java.math.BigDecimal.valueOf(quantity)) + " EUR");
+        String confirmation = Utils.readLine(input, output, "Patvirtinti užsakymą? (t/n): ");
+        if (!"t".equalsIgnoreCase(confirmation)) {
+            output.println("Užsakymo kūrimas atšauktas.");
+            return;
+        }
         FoodOrder order = clientConsoleService.createSingleItemOrder(
-                clientId, (long) restaurantId, (long) menuItemId, quantity);
+                clientId, restaurant.getId(), menuItem.getId(), quantity);
         output.println("Užsakymas sukurtas. ID=" + order.getId()
                 + ", suma=" + order.getTotalPrice() + " EUR");
+    }
+
+    private void printRestaurants(List<Restaurant> restaurants) {
+        for (int index = 0; index < restaurants.size(); index++) {
+            Restaurant restaurant = restaurants.get(index);
+            output.println((index + 1) + " - " + restaurant.getName()
+                    + " | " + restaurant.getType());
+        }
+    }
+
+    private void printMenu(List<MenuItem> items) {
+        for (int index = 0; index < items.size(); index++) {
+            MenuItem item = items.get(index);
+            output.println((index + 1) + " - " + item.getName()
+                    + " | " + item.getPrice() + " EUR");
+        }
+    }
+
+    private <T> T selectedItem(List<T> items, int choice) {
+        if (choice == 0) return null;
+        if (choice < 1 || choice > items.size()) {
+            output.println("Neteisingas pasirinkimas.");
+            return null;
+        }
+        return items.get(choice - 1);
     }
 
     private void showClientOrders(Long clientId) {
