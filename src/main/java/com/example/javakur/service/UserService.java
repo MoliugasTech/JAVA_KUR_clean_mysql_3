@@ -10,6 +10,7 @@ import com.example.javakur.repository.UserRepository;
 import com.example.javakur.util.PasswordUtil;
 
 import java.util.List;
+import java.util.Optional;
 
 public class UserService {
     private final UserRepository userRepository;
@@ -57,6 +58,11 @@ public class UserService {
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
+    }
+
+    public Optional<User> findById(Long id) {
+        if (id == null) throw new ValidationException("User id is required");
+        return userRepository.findById(id);
     }
 
     private void validateCommonUserFields(String username, String password, String name, String surname, String email) {
