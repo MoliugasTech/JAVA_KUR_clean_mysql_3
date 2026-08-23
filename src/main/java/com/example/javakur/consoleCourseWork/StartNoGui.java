@@ -8,6 +8,7 @@ import com.example.javakur.service.AuthenticationService;
 import com.example.javakur.service.ClientConsoleService;
 import com.example.javakur.service.MenuService;
 import com.example.javakur.service.OrderService;
+import com.example.javakur.service.OwnerConsoleService;
 import com.example.javakur.service.RestaurantService;
 import com.example.javakur.service.UserService;
 import com.example.javakur.util.HibernateUtil;
@@ -28,9 +29,17 @@ public class StartNoGui {
                 new RestaurantService(restaurantRepository),
                 new MenuService(menuItemRepository),
                 new OrderService(orderRepository));
+        OwnerConsoleService ownerConsoleService = new OwnerConsoleService(
+                new UserService(userRepository),
+                new RestaurantService(restaurantRepository),
+                new MenuService(menuItemRepository),
+                new OrderService(orderRepository),
+                restaurantRepository,
+                orderRepository);
         MenuControl menuControl = new MenuControl(
                 authenticationService,
                 clientConsoleService,
+                ownerConsoleService,
                 new BufferedReader(new InputStreamReader(System.in)),
                 System.out);
 
