@@ -62,25 +62,25 @@ public class OrderInteractionService {
     }
 
     private FoodOrder requireParticipantOrder(Long orderId, Long userId) {
-        if (orderId == null) throw new ValidationException("Order id is required");
+        if (orderId == null) throw new ValidationException("Užsakymo ID yra privalomas");
         return orderRepository.findParticipantOrder(orderId, userId)
-                .orElseThrow(() -> new ValidationException("Order was not found for this user"));
+                .orElseThrow(() -> new ValidationException("Šiam naudotojui užsakymas nerastas"));
     }
 
     private User requireUser(Long userId) {
         return userService.findById(userId)
-                .orElseThrow(() -> new ValidationException("User was not found"));
+                .orElseThrow(() -> new ValidationException("Naudotojas nerastas"));
     }
 
     private Client requireClient(Long userId) {
         User user = requireUser(userId);
-        if (!(user instanceof Client client)) throw new ValidationException("User is not a client");
+        if (!(user instanceof Client client)) throw new ValidationException("Naudotojas nėra klientas");
         return client;
     }
 
     private Driver requireDriver(Long userId) {
         User user = requireUser(userId);
-        if (!(user instanceof Driver driver)) throw new ValidationException("User is not a driver");
+        if (!(user instanceof Driver driver)) throw new ValidationException("Naudotojas nėra vairuotojas");
         return driver;
     }
 }
