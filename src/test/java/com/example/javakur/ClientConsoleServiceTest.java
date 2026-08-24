@@ -14,6 +14,7 @@ import com.example.javakur.repository.UserRepository;
 import com.example.javakur.service.ClientConsoleService;
 import com.example.javakur.service.MenuService;
 import com.example.javakur.service.OrderService;
+import com.example.javakur.service.OrderCart;
 import com.example.javakur.service.RestaurantService;
 import com.example.javakur.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -73,6 +74,28 @@ class ClientConsoleServiceTest {
 
         assertEquals(new BigDecimal("19.00"), order.getTotalPrice());
         assertEquals(List.of(order), service.listClientOrders(client.getId()));
+    }
+
+    @Test
+    void checksOutCartWithMultipleItems() {
+        MenuItem drink = new MenuItem("Drink", "Test", new BigDecimal("2.25"), restaurant);
+        drink.setId(4L);
+        OrderCart cart = new OrderCart(restaurant);
+        cart.setQuantity(item, 2);
+        cart.setQuantity(drink, 3);
+
+        FoodOrder order = service.checkout(client.getId(), cart);
+
+        assertEquals(2, order.getItems().size());
+        assertEquals(new BigDecimal("25.75"), order.getSubtotal());
+        assertEquals(new BigDecimal("25.75"), order.getTotalPrice());
+        assertEquals(List.of(order), service.listClientOrders(client.getId()));
+    }
+
+    @Test
+    void rejectsEmptyCartAtCheckout() {
+        assertThrows(ValidationException.class,
+                () -> service.checkout(client.getId(), new OrderCart(restaurant)));
     }
 
     @Test
