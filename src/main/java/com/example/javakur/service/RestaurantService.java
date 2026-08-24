@@ -19,11 +19,11 @@ public class RestaurantService {
 
     public Restaurant createRestaurant(String name, String description, String address, RestaurantType type,
                                        LocalTime openingTime, LocalTime closingTime, RestaurantOwner owner) {
-        if (name == null || name.isBlank()) throw new ValidationException("Restaurant name cannot be blank");
-        if (address == null || address.isBlank()) throw new ValidationException("Restaurant address cannot be blank");
-        if (type == null) throw new ValidationException("Restaurant type is required");
-        if (openingTime == null || closingTime == null) throw new ValidationException("Working hours are required");
-        if (owner == null || owner.getId() == null) throw new ValidationException("Persisted restaurant owner is required");
+        if (name == null || name.isBlank()) throw new ValidationException("Restorano pavadinimas negali būti tuščias");
+        if (address == null || address.isBlank()) throw new ValidationException("Restorano adresas negali būti tuščias");
+        if (type == null) throw new ValidationException("Restorano tipas yra privalomas");
+        if (openingTime == null || closingTime == null) throw new ValidationException("Darbo laikas yra privalomas");
+        if (owner == null || owner.getId() == null) throw new ValidationException("Išsaugotas restorano savininkas yra privalomas");
 
         return restaurantRepository.save(new Restaurant(name.trim(), description, address.trim(), type,
                 openingTime, closingTime, owner));
@@ -38,7 +38,7 @@ public class RestaurantService {
     }
 
     public Optional<Restaurant> findById(Long id) {
-        if (id == null) throw new ValidationException("Restaurant id is required");
+        if (id == null) throw new ValidationException("Restorano ID yra privalomas");
         return restaurantRepository.findById(id);
     }
 }
