@@ -34,7 +34,7 @@ public class DriverConsoleService {
     public FoodOrder pickUpOrder(Long driverId, Long orderId) {
         Driver driver = requireDriver(driverId);
         FoodOrder order = orderRepository.findReadyUnassignedById(orderId)
-                .orElseThrow(() -> new ValidationException("Order is no longer available for pickup"));
+                .orElseThrow(() -> new ValidationException("Užsakymo nebegalima paimti pristatymui"));
         return orderService.assignDriver(order, driver);
     }
 
@@ -45,18 +45,18 @@ public class DriverConsoleService {
 
     public FoodOrder changeDeliveryStatus(Long driverId, Long orderId, OrderStatus status) {
         if (status != OrderStatus.DELIVERING && status != OrderStatus.COMPLETED) {
-            throw new ValidationException("Driver can only set DELIVERING or COMPLETED");
+            throw new ValidationException("Vairuotojas gali nustatyti tik DELIVERING arba COMPLETED");
         }
         FoodOrder order = orderRepository.findOwnedByDriver(orderId, driverId)
-                .orElseThrow(() -> new ValidationException("Order is not assigned to this driver"));
+                .orElseThrow(() -> new ValidationException("Užsakymas nepriskirtas šiam vairuotojui"));
         return orderService.changeStatus(order, status);
     }
 
     private Driver requireDriver(Long driverId) {
         User user = userService.findById(driverId)
-                .orElseThrow(() -> new ValidationException("Driver was not found"));
+                .orElseThrow(() -> new ValidationException("Vairuotojas nerastas"));
         if (!(user instanceof Driver driver)) {
-            throw new ValidationException("User is not a driver");
+            throw new ValidationException("Naudotojas nėra vairuotojas");
         }
         return driver;
     }
