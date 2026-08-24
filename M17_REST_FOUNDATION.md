@@ -23,7 +23,7 @@ REST aplikacija naudoja tą patį projekto šaknyje esantį, į Git nekeliamą
 
 ```properties
 db.url=jdbc:mysql://localhost:3306/food_delivery
-db.username=root
+db.user=root
 db.password=
 ```
 
