@@ -39,4 +39,15 @@ public class RestaurantRepository extends BaseRepository<Restaurant, Long> {
             em.close();
         }
     }
+
+    public List<Restaurant> findAllWithOwner() {
+        EntityManager em = getEntityManager();
+        try {
+            return em.createQuery(
+                    "SELECT r FROM Restaurant r JOIN FETCH r.owner ORDER BY r.name", Restaurant.class)
+                    .getResultList();
+        } finally {
+            em.close();
+        }
+    }
 }
