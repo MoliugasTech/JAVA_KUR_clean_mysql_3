@@ -71,6 +71,17 @@ class AuthenticationServiceTest {
     }
 
     @Test
+    void rejectsInactiveAccount() {
+        User client = repository.findByUsername("client").orElseThrow();
+        client.setActive(false);
+
+        ValidationException error = assertThrows(ValidationException.class,
+                () -> authenticationService.login("client", PASSWORD));
+
+        assertEquals("Vartotojo paskyra užblokuota", error.getMessage());
+    }
+
+    @Test
     void allowsMatchingRole() {
         UserSession client = authenticationService.login("client", PASSWORD);
 
