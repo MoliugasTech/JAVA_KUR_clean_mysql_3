@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.javakur.fxControllers.MainFormController">
+    <left>
+        <VBox prefWidth="245" spacing="18" styleClass="sidebar">
+            <Label text="FOOD DELIVERY" styleClass="brand"/>
+            <Label fx:id="usernameLabel" wrapText="true" styleClass="sidebar-user"/>
+            <Label fx:id="roleLabel" wrapText="true" styleClass="sidebar-role"/>
+            <Button fx:id="userManagementButton" text="Vartotojų valdymas"
+                    maxWidth="Infinity" onAction="#handleUsers"/>
+            <Region VBox.vgrow="ALWAYS"/>
+            <Button text="Atsijungti" maxWidth="Infinity" styleClass="secondary-button"
+                    onAction="#handleLogout"/>
+        </VBox>
+    </left>
+    <center>
+        <TabPane tabClosingPolicy="UNAVAILABLE">
+            <tabs>
+                <Tab text="Pagrindinis">
+                    <content>
+                        <VBox spacing="12" styleClass="content-panel">
+                            <padding>
+                                <Insets top="42" right="42" bottom="42" left="42"/>
+                            </padding>
+                            <Label text="Valdymo skydelis" styleClass="title"/>
+                            <Label text="Minimalus desktop programos pagrindas paruoštas. Administratorius gali atidaryti vartotojų CRUD formą, o restorano funkcijos bus prijungtos vėlesniame etape."
+                                   wrapText="true" styleClass="subtitle"/>
+                        </VBox>
+                    </content>
+                </Tab>
+                <Tab text="Sistemos informacija">
+                    <content>
+                        <VBox spacing="10" styleClass="content-panel">
+                            <padding>
+                                <Insets top="42" right="42" bottom="42" left="42"/>
+                            </padding>
+                            <Label text="JavaFX + FXML" styleClass="section-title"/>
+                            <Label text="Duomenys gaunami iš MySQL per esamą Hibernate ir servisų sluoksnį."
+                                   wrapText="true" styleClass="subtitle"/>
+                        </VBox>
+                    </content>
+                </Tab>
+            </tabs>
+        </TabPane>
+    </center>
+</BorderPane>

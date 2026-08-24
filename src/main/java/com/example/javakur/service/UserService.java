@@ -2,6 +2,7 @@ package com.example.javakur.service;
 
 import com.example.javakur.exception.ValidationException;
 import com.example.javakur.model.RestaurantOwner;
+import com.example.javakur.model.Admin;
 import com.example.javakur.model.Client;
 import com.example.javakur.model.Driver;
 import com.example.javakur.model.VehicleType;
@@ -26,6 +27,16 @@ public class UserService {
         RestaurantOwner owner = new RestaurantOwner(
                 username.trim(), PasswordUtil.hashPassword(plainPassword), name.trim(), surname.trim(), email.trim());
         return (RestaurantOwner) userRepository.save(owner);
+    }
+
+    public Admin createAdmin(String username, String plainPassword, String name,
+                             String surname, String email) {
+        validateCommonUserFields(username, plainPassword, name, surname, email);
+        validateUniqueCredentials(username, email);
+        Admin admin = new Admin(
+                username.trim(), PasswordUtil.hashPassword(plainPassword),
+                name.trim(), surname.trim(), email.trim());
+        return (Admin) userRepository.save(admin);
     }
 
     public Client createClient(String username, String plainPassword, String name,
@@ -65,9 +76,50 @@ public class UserService {
         return userRepository.findById(id);
     }
 
+    public User updateUser(Long id, String username, String newPassword, String name,
+                           String surname, String email, String deliveryAddress,
+                           VehicleType vehicleType) {
+        if (id == null) throw new ValidationException("Naudotojo ID yra privalomas");
+        validateProfileFields(username, name, surname, email);
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ValidationException("Naudotojas nerastas"));
+        validateUniqueCredentialsForUpdate(id, username, email);
+
+        user.setUsername(username.trim());
+        user.setName(name.trim());
+        user.setSurname(surname.trim());
+        user.setEmail(email.trim());
+
+        if (newPassword != null && !newPassword.isBlank()) {
+            if (newPassword.length() < 8) {
+                throw new ValidationException("Slaptažodį turi sudaryti bent 8 simboliai");
+            }
+            user.setPasswordHash(PasswordUtil.hashPassword(newPassword));
+        }
+
+        if (user instanceof Client client) {
+            if (deliveryAddress == null || deliveryAddress.isBlank()) {
+                throw new ValidationException("Pristatymo adresas negali būti tuščias");
+            }
+            client.setDeliveryAddress(deliveryAddress.trim());
+        }
+        if (user instanceof Driver driver) {
+            if (vehicleType == null) {
+                throw new ValidationException("Transporto tipas yra privalomas");
+            }
+            driver.setVehicleType(vehicleType);
+        }
+        return userRepository.update(user);
+    }
+
     private void validateCommonUserFields(String username, String password, String name, String surname, String email) {
-        if (username == null || username.isBlank()) throw new ValidationException("Vartotojo vardas negali būti tuščias");
+        validateProfileFields(username, name, surname, email);
         if (password == null || password.length() < 8) throw new ValidationException("Slaptažodį turi sudaryti bent 8 simboliai");
+    }
+
+    private void validateProfileFields(String username, String name, String surname, String email) {
+        if (username == null || username.isBlank()) throw new ValidationException("Vartotojo vardas negali būti tuščias");
         if (name == null || name.isBlank()) throw new ValidationException("Vardas negali būti tuščias");
         if (surname == null || surname.isBlank()) throw new ValidationException("Pavardė negali būti tuščia");
         if (email == null || email.isBlank()) throw new ValidationException("El. paštas negali būti tuščias");
@@ -80,5 +132,18 @@ public class UserService {
         if (userRepository.findByEmail(email.trim()).isPresent()) {
             throw new ValidationException("El. paštas jau naudojamas");
         }
+    }
+
+    private void validateUniqueCredentialsForUpdate(Long userId, String username, String email) {
+        userRepository.findByUsername(username.trim())
+                .filter(existing -> !existing.getId().equals(userId))
+                .ifPresent(existing -> {
+                    throw new ValidationException("Vartotojo vardas jau naudojamas");
+                });
+        userRepository.findByEmail(email.trim())
+                .filter(existing -> !existing.getId().equals(userId))
+                .ifPresent(existing -> {
+                    throw new ValidationException("El. paštas jau naudojamas");
+                });
     }
 }

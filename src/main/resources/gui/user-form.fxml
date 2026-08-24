@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.javakur.fxControllers.UserFormController"
+            styleClass="user-window">
+    <top>
+        <VBox spacing="14" styleClass="toolbar-panel">
+            <padding>
+                <Insets top="20" right="24" bottom="16" left="24"/>
+            </padding>
+            <HBox alignment="CENTER_LEFT" spacing="12">
+                <VBox spacing="3" HBox.hgrow="ALWAYS">
+                    <Label text="Vartotojų valdymas" styleClass="section-title"/>
+                    <Label text="Kūrimas, peržiūra, redagavimas ir blokavimas" styleClass="subtitle"/>
+                </VBox>
+                <Button text="Naujas vartotojas" onAction="#handleNew"/>
+                <Button text="Uždaryti" styleClass="secondary-button-light" onAction="#handleClose"/>
+            </HBox>
+            <TextField fx:id="searchField"
+                       promptText="Ieškoti pagal vartotojo vardą, vardą, pavardę arba el. paštą"/>
+        </VBox>
+    </top>
+    <center>
+        <TableView fx:id="usersTable" columnResizePolicy="CONSTRAINED_RESIZE_POLICY">
+            <columns>
+                <TableColumn fx:id="idColumn" text="ID" prefWidth="55"/>
+                <TableColumn fx:id="roleColumn" text="Rolė" prefWidth="130"/>
+                <TableColumn fx:id="usernameColumn" text="Prisijungimo vardas" prefWidth="145"/>
+                <TableColumn fx:id="nameColumn" text="Vardas ir pavardė" prefWidth="175"/>
+                <TableColumn fx:id="emailColumn" text="El. paštas" prefWidth="200"/>
+                <TableColumn fx:id="statusColumn" text="Būsena" prefWidth="105"/>
+            </columns>
+        </TableView>
+    </center>
+    <right>
+        <ScrollPane fitToWidth="true" prefWidth="350" styleClass="form-scroll">
+            <content>
+                <VBox spacing="10" styleClass="edit-panel">
+                    <padding>
+                        <Insets top="22" right="24" bottom="24" left="24"/>
+                    </padding>
+                    <Label fx:id="formTitleLabel" text="Naujas vartotojas" styleClass="section-title"/>
+                    <Separator/>
+                    <Label text="Rolė" styleClass="field-label"/>
+                    <ComboBox fx:id="roleComboBox" maxWidth="Infinity"/>
+                    <Label text="Vartotojo vardas" styleClass="field-label"/>
+                    <TextField fx:id="usernameField" promptText="pvz. jonas"/>
+                    <Label text="Slaptažodis" styleClass="field-label"/>
+                    <PasswordField fx:id="passwordField"/>
+                    <Label fx:id="passwordHintLabel" text="Bent 8 simboliai" styleClass="form-hint"/>
+                    <Label text="Vardas" styleClass="field-label"/>
+                    <TextField fx:id="nameField"/>
+                    <Label text="Pavardė" styleClass="field-label"/>
+                    <TextField fx:id="surnameField"/>
+                    <Label text="El. paštas" styleClass="field-label"/>
+                    <TextField fx:id="emailField" promptText="vardas@example.com"/>
+                    <HBox fx:id="deliveryAddressRow" spacing="8" alignment="CENTER_LEFT">
+                        <children>
+                            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                                <Label text="Pristatymo adresas" styleClass="field-label"/>
+                                <TextField fx:id="deliveryAddressField"/>
+                            </VBox>
+                        </children>
+                    </HBox>
+                    <HBox fx:id="vehicleTypeRow" spacing="8" alignment="CENTER_LEFT">
+                        <children>
+                            <VBox spacing="5" HBox.hgrow="ALWAYS">
+                                <Label text="Transporto tipas" styleClass="field-label"/>
+                                <ComboBox fx:id="vehicleTypeComboBox" maxWidth="Infinity"/>
+                            </VBox>
+                        </children>
+                    </HBox>
+                    <HBox spacing="10">
+                        <Button text="Išsaugoti" maxWidth="Infinity" HBox.hgrow="ALWAYS"
+                                onAction="#handleSave"/>
+                        <Button fx:id="activeButton" text="Blokuoti" maxWidth="Infinity"
+                                HBox.hgrow="ALWAYS" styleClass="danger-button"
+                                onAction="#handleToggleActive"/>
+                    </HBox>
+                </VBox>
+            </content>
+        </ScrollPane>
+    </right>
+</BorderPane>

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane xmlns="http://javafx.com/javafx/21"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="com.example.javakur.fxControllers.LoginFormController"
+           styleClass="login-background">
+    <padding>
+        <Insets top="32" right="32" bottom="32" left="32"/>
+    </padding>
+    <VBox alignment="CENTER_LEFT" maxWidth="390" spacing="14" styleClass="login-card">
+        <Label text="FOOD DELIVERY" styleClass="eyebrow"/>
+        <Label text="Sveiki sugrįžę" styleClass="title"/>
+        <Label text="Prisijunkite kaip administratorius arba restorano savininkas"
+               wrapText="true" styleClass="subtitle"/>
+        <TextField fx:id="usernameField" promptText="Vartotojo vardas"/>
+        <PasswordField fx:id="passwordField" promptText="Slaptažodis" onAction="#handleLogin"/>
+        <Label fx:id="errorLabel" minHeight="18" wrapText="true" styleClass="error"/>
+        <Button text="Prisijungti" defaultButton="true" maxWidth="Infinity"
+                onAction="#handleLogin"/>
+        <Label text="Klientams ir vairuotojams skirta mobilioji programėlė"
+               wrapText="true" styleClass="form-hint"/>
+    </VBox>
+</StackPane>

@@ -1,0 +1,168 @@
+.root {
+    -fx-font-family: "Inter", "SF Pro Display", "Segoe UI", sans-serif;
+    -fx-background-color: #f4f6f3;
+    -fx-font-size: 14px;
+}
+
+.login-background {
+    -fx-background-color: linear-gradient(to bottom right, #ecf3ee, #f8eee8);
+}
+
+.login-card {
+    -fx-background-color: white;
+    -fx-background-radius: 18;
+    -fx-padding: 34;
+    -fx-effect: dropshadow(gaussian, rgba(27, 45, 35, 0.13), 28, 0, 0, 8);
+}
+
+.title {
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #193528;
+}
+
+.section-title {
+    -fx-font-size: 21px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #193528;
+}
+
+.subtitle {
+    -fx-font-size: 14px;
+    -fx-text-fill: #64736b;
+}
+
+.eyebrow {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #e66a2c;
+}
+
+.error {
+    -fx-text-fill: #b42318;
+}
+
+.form-hint {
+    -fx-font-size: 12px;
+    -fx-text-fill: #77847d;
+}
+
+.field-label {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #405149;
+}
+
+.brand {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.sidebar-user {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.sidebar-role {
+    -fx-text-fill: #bdd0c5;
+}
+
+.text-field,
+.password-field,
+.combo-box {
+    -fx-padding: 9;
+    -fx-background-radius: 9;
+    -fx-border-radius: 9;
+    -fx-border-color: #d9e0dc;
+    -fx-background-color: white;
+}
+
+.button {
+    -fx-background-color: #e66a2c;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 11 17;
+    -fx-background-radius: 9;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: #d65d23;
+}
+
+.button:disabled {
+    -fx-opacity: 0.48;
+}
+
+.secondary-button {
+    -fx-background-color: #294b3b;
+}
+
+.secondary-button-light {
+    -fx-background-color: #e9efeb;
+    -fx-text-fill: #294b3b;
+}
+
+.danger-button {
+    -fx-background-color: #a63a31;
+}
+
+.sidebar {
+    -fx-background-color: #193528;
+    -fx-padding: 34 24;
+}
+
+.content-panel {
+    -fx-background-color: #f4f6f3;
+}
+
+.toolbar-panel {
+    -fx-background-color: white;
+    -fx-border-color: transparent transparent #dfe5e1 transparent;
+}
+
+.edit-panel {
+    -fx-background-color: white;
+}
+
+.form-scroll {
+    -fx-background-color: white;
+    -fx-border-color: #dfe5e1 transparent transparent #dfe5e1;
+}
+
+.form-scroll > .viewport {
+    -fx-background-color: white;
+}
+
+.table-view {
+    -fx-background-color: white;
+    -fx-border-color: transparent #dfe5e1 transparent transparent;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #eef2ef;
+}
+
+.table-view .column-header,
+.table-view .filler {
+    -fx-background-color: transparent;
+    -fx-padding: 10 6;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #dce9e1;
+}
+
+.table-row-cell:selected .text {
+    -fx-fill: #193528;
+}
+
+.tab-pane .tab-header-area .tab-header-background {
+    -fx-background-color: white;
+}
+
+.tab-pane .tab:selected {
+    -fx-background-color: #e5eee8;
+}
