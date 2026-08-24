@@ -69,10 +69,10 @@ public class OwnerConsoleService {
                                    BigDecimal newPrice, Boolean available) {
         Restaurant restaurant = requireOwnedRestaurant(ownerId, restaurantId);
         MenuItem item = menuService.findById(itemId)
-                .orElseThrow(() -> new ValidationException("Menu item was not found"));
+                .orElseThrow(() -> new ValidationException("Meniu elementas nerastas"));
         if (item.getRestaurant() == null || item.getRestaurant().getId() == null
                 || !restaurant.getId().equals(item.getRestaurant().getId())) {
-            throw new ValidationException("Menu item does not belong to this restaurant");
+            throw new ValidationException("Meniu elementas nepriklauso šiam restoranui");
         }
         if (newPrice != null) item = menuService.updatePrice(item, newPrice);
         if (available != null) item = menuService.updateAvailability(item, available);
@@ -86,27 +86,27 @@ public class OwnerConsoleService {
 
     public FoodOrder changeOrderStatus(Long ownerId, Long orderId, OrderStatus newStatus) {
         if (newStatus == null || !OWNER_STATUSES.contains(newStatus)) {
-            throw new ValidationException("Restaurant owner cannot set status " + newStatus);
+            throw new ValidationException("Restorano savininkas negali nustatyti būsenos " + newStatus);
         }
         FoodOrder order = orderRepository.findOwnedByRestaurantOwner(orderId, ownerId)
-                .orElseThrow(() -> new ValidationException("Order does not belong to this owner"));
+                .orElseThrow(() -> new ValidationException("Užsakymas nepriklauso šiam savininkui"));
         return orderService.changeStatus(order, newStatus);
     }
 
     private RestaurantOwner requireOwner(Long ownerId) {
         User user = userService.findById(ownerId)
-                .orElseThrow(() -> new ValidationException("Restaurant owner was not found"));
+                .orElseThrow(() -> new ValidationException("Restorano savininkas nerastas"));
         if (!(user instanceof RestaurantOwner owner)) {
-            throw new ValidationException("User is not a restaurant owner");
+            throw new ValidationException("Naudotojas nėra restorano savininkas");
         }
         return owner;
     }
 
     private Restaurant requireOwnedRestaurant(Long ownerId, Long restaurantId) {
         if (ownerId == null || restaurantId == null) {
-            throw new ValidationException("Owner and restaurant ids are required");
+            throw new ValidationException("Savininko ir restorano ID yra privalomi");
         }
         return restaurantRepository.findOwnedById(restaurantId, ownerId)
-                .orElseThrow(() -> new ValidationException("Restaurant does not belong to this owner"));
+                .orElseThrow(() -> new ValidationException("Restoranas nepriklauso šiam savininkui"));
     }
 }
