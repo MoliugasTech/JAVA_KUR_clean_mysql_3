@@ -17,22 +17,22 @@ public class MenuService {
     }
 
     public MenuItem createMenuItem(String name, String description, BigDecimal price, Restaurant restaurant) {
-        if (name == null || name.isBlank()) throw new ValidationException("Menu item name cannot be blank");
-        if (price == null || price.compareTo(BigDecimal.ZERO) <= 0) throw new ValidationException("Price must be greater than zero");
-        if (restaurant == null || restaurant.getId() == null) throw new ValidationException("Persisted restaurant is required");
+        if (name == null || name.isBlank()) throw new ValidationException("Patiekalo pavadinimas negali būti tuščias");
+        if (price == null || price.compareTo(BigDecimal.ZERO) <= 0) throw new ValidationException("Kaina turi būti didesnė už nulį");
+        if (restaurant == null || restaurant.getId() == null) throw new ValidationException("Išsaugotas restoranas yra privalomas");
         return menuItemRepository.save(new MenuItem(name.trim(), description, price, restaurant));
     }
 
     public MenuItem updatePrice(MenuItem item, BigDecimal newPrice) {
-        if (item == null || item.getId() == null) throw new ValidationException("Persisted menu item is required");
-        if (newPrice == null || newPrice.compareTo(BigDecimal.ZERO) <= 0) throw new ValidationException("Price must be greater than zero");
+        if (item == null || item.getId() == null) throw new ValidationException("Išsaugotas meniu elementas yra privalomas");
+        if (newPrice == null || newPrice.compareTo(BigDecimal.ZERO) <= 0) throw new ValidationException("Kaina turi būti didesnė už nulį");
         item.setPrice(newPrice);
         return menuItemRepository.update(item);
     }
 
     public MenuItem updateAvailability(MenuItem item, boolean available) {
         if (item == null || item.getId() == null) {
-            throw new ValidationException("Persisted menu item is required");
+            throw new ValidationException("Išsaugotas meniu elementas yra privalomas");
         }
         item.setAvailable(available);
         return menuItemRepository.update(item);
@@ -44,18 +44,18 @@ public class MenuService {
 
     public List<MenuItem> findAvailableByRestaurant(Restaurant restaurant) {
         if (restaurant == null || restaurant.getId() == null) {
-            throw new ValidationException("Persisted restaurant is required");
+            throw new ValidationException("Išsaugotas restoranas yra privalomas");
         }
         return menuItemRepository.findAvailableByRestaurant(restaurant);
     }
 
     public Optional<MenuItem> findById(Long id) {
-        if (id == null) throw new ValidationException("Menu item id is required");
+        if (id == null) throw new ValidationException("Meniu elemento ID yra privalomas");
         return menuItemRepository.findById(id);
     }
 
     public void deleteMenuItem(Long id) {
-        if (id == null) throw new ValidationException("Menu item id is required");
+        if (id == null) throw new ValidationException("Meniu elemento ID yra privalomas");
         menuItemRepository.deleteById(id);
     }
 }
