@@ -9,6 +9,7 @@ import com.example.javakur.service.ClientConsoleService;
 import com.example.javakur.service.DriverConsoleService;
 import com.example.javakur.service.OwnerConsoleService;
 import com.example.javakur.service.OrderInteractionService;
+import com.example.javakur.service.AdminConsoleService;
 
 import java.io.BufferedReader;
 import java.io.PrintStream;
@@ -23,6 +24,7 @@ public class MenuControl {
     private final OwnerConsoleService ownerService;
     private final DriverConsoleService driverService;
     private final OrderInteractionService interactionService;
+    private final AdminConsoleService adminService;
     private final BufferedReader input;
     private final PrintStream output;
     private final Map<UserRole, RoleMenuController> roleControllers;
@@ -37,11 +39,20 @@ public class MenuControl {
                        ClientConsoleService clientService, OwnerConsoleService ownerService,
                        DriverConsoleService driverService, OrderInteractionService interactionService,
                        BufferedReader input, PrintStream output) {
+        this(authenticationService, clientService, ownerService, driverService,
+                interactionService, null, input, output);
+    }
+
+    public MenuControl(AuthenticationService authenticationService,
+                       ClientConsoleService clientService, OwnerConsoleService ownerService,
+                       DriverConsoleService driverService, OrderInteractionService interactionService,
+                       AdminConsoleService adminService, BufferedReader input, PrintStream output) {
         this.authenticationService = authenticationService;
         this.clientService = clientService;
         this.ownerService = ownerService;
         this.driverService = driverService;
         this.interactionService = interactionService;
+        this.adminService = adminService;
         this.input = input;
         this.output = output;
         this.roleControllers = createRoleControllers();
@@ -162,7 +173,7 @@ public class MenuControl {
                 new OwnerMenuController(ownerService, interactions, input, output));
         controllers.put(UserRole.DRIVER,
                 new DriverMenuController(driverService, interactions, input, output));
-        controllers.put(UserRole.ADMIN, new AdminMenuController(input, output));
+        controllers.put(UserRole.ADMIN, new AdminMenuController(adminService, input, output));
         return controllers;
     }
 
