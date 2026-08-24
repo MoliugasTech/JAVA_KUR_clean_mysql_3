@@ -11,6 +11,7 @@ import com.example.javakur.model.UserRole;
 import com.example.javakur.repository.UserRepository;
 import com.example.javakur.service.AuthenticationService;
 import com.example.javakur.service.ClientConsoleService;
+import com.example.javakur.service.OrderCart;
 import com.example.javakur.util.PasswordUtil;
 import org.junit.jupiter.api.Test;
 
@@ -93,7 +94,7 @@ class ConsoleMenuTest {
         MenuItem item = new MenuItem("Visible dish", "Test", new BigDecimal("7.50"), restaurant);
         item.setId(20L);
 
-        String consoleInput = "1\nclient\npassword123\n2\n1\n1\n2\nt\n0\n0\n";
+        String consoleInput = "1\nclient\npassword123\n2\n1\n1\n1\n2\n4\nt\n0\n0\n";
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         MenuControl menu = new MenuControl(
                 new AuthenticationService(new SingleUserRepository(client)),
@@ -106,7 +107,7 @@ class ConsoleMenuTest {
         String output = bytes.toString(StandardCharsets.UTF_8);
         assertTrue(output.contains("1 - Visible restaurant"));
         assertTrue(output.contains("1 - Visible dish | 7.50 EUR"));
-        assertTrue(output.contains("Numatoma suma: 15.00 EUR"));
+        assertTrue(output.contains("Iš viso: 15.00 EUR"));
         assertTrue(output.contains("Užsakymas sukurtas. ID=30, suma=15.00 EUR"));
     }
 
@@ -144,11 +145,10 @@ class ConsoleMenuTest {
         }
 
         @Override
-        public FoodOrder createSingleItemOrder(Long clientId, Long restaurantId,
-                                               Long menuItemId, int quantity) {
+        public FoodOrder checkout(Long clientId, OrderCart cart) {
             FoodOrder order = new FoodOrder();
             order.setId(30L);
-            order.setTotalPrice(item.getPrice().multiply(BigDecimal.valueOf(quantity)));
+            order.setTotalPrice(cart.subtotal());
             return order;
         }
     }
