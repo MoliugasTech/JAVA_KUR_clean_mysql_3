@@ -32,7 +32,7 @@ public class UserService {
                                String surname, String email, String deliveryAddress) {
         validateCommonUserFields(username, plainPassword, name, surname, email);
         if (deliveryAddress == null || deliveryAddress.isBlank()) {
-            throw new ValidationException("Delivery address cannot be blank");
+            throw new ValidationException("Pristatymo adresas negali būti tuščias");
         }
         validateUniqueCredentials(username, email);
 
@@ -46,7 +46,7 @@ public class UserService {
                                String surname, String email, VehicleType vehicleType) {
         validateCommonUserFields(username, plainPassword, name, surname, email);
         if (vehicleType == null) {
-            throw new ValidationException("Vehicle type is required");
+            throw new ValidationException("Transporto tipas yra privalomas");
         }
         validateUniqueCredentials(username, email);
 
@@ -61,24 +61,24 @@ public class UserService {
     }
 
     public Optional<User> findById(Long id) {
-        if (id == null) throw new ValidationException("User id is required");
+        if (id == null) throw new ValidationException("Naudotojo ID yra privalomas");
         return userRepository.findById(id);
     }
 
     private void validateCommonUserFields(String username, String password, String name, String surname, String email) {
-        if (username == null || username.isBlank()) throw new ValidationException("Username cannot be blank");
-        if (password == null || password.length() < 8) throw new ValidationException("Password must contain at least 8 characters");
-        if (name == null || name.isBlank()) throw new ValidationException("Name cannot be blank");
-        if (surname == null || surname.isBlank()) throw new ValidationException("Surname cannot be blank");
-        if (email == null || email.isBlank()) throw new ValidationException("Email cannot be blank");
+        if (username == null || username.isBlank()) throw new ValidationException("Vartotojo vardas negali būti tuščias");
+        if (password == null || password.length() < 8) throw new ValidationException("Slaptažodį turi sudaryti bent 8 simboliai");
+        if (name == null || name.isBlank()) throw new ValidationException("Vardas negali būti tuščias");
+        if (surname == null || surname.isBlank()) throw new ValidationException("Pavardė negali būti tuščia");
+        if (email == null || email.isBlank()) throw new ValidationException("El. paštas negali būti tuščias");
     }
 
     private void validateUniqueCredentials(String username, String email) {
         if (userRepository.findByUsername(username.trim()).isPresent()) {
-            throw new ValidationException("Username is already in use");
+            throw new ValidationException("Vartotojo vardas jau naudojamas");
         }
         if (userRepository.findByEmail(email.trim()).isPresent()) {
-            throw new ValidationException("Email is already in use");
+            throw new ValidationException("El. paštas jau naudojamas");
         }
     }
 }
