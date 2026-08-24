@@ -13,12 +13,19 @@ class DriverMenuController extends AbstractRoleMenuController {
     static final List<String> OPTIONS = List.of(
             "Pristatymui paruošti užsakymai", "Paimti užsakymą",
             "Mano aktyvūs pristatymai", "Keisti pristatymo būseną",
-            "Palikti atsiliepimą klientui");
+            "Užsakymų žinutės ir atsiliepimai");
     private final DriverConsoleService service;
+    private final OrderInteractionMenu interactions;
 
     DriverMenuController(DriverConsoleService service, BufferedReader input, PrintStream output) {
+        this(service, null, input, output);
+    }
+
+    DriverMenuController(DriverConsoleService service, OrderInteractionMenu interactions,
+                         BufferedReader input, PrintStream output) {
         super(input, output);
         this.service = service;
+        this.interactions = interactions;
     }
     public List<String> options() { return OPTIONS; }
 
@@ -29,7 +36,7 @@ class DriverMenuController extends AbstractRoleMenuController {
                 case 2 -> pickUp(session.userId());
                 case 3 -> showActive(session.userId());
                 case 4 -> changeStatus(session.userId());
-                case 5 -> output.println("Atsiliepimai bus prijungti M13 etape.");
+                case 5 -> interactions.open(session);
                 default -> output.println("Neteisingas pasirinkimas.");
             }
         } catch (RuntimeException e) {
