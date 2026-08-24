@@ -13,6 +13,12 @@ import java.time.Instant;
 
 @RestControllerAdvice
 public class ApiExceptionHandler {
+    @ExceptionHandler(ApiAuthenticationException.class)
+    public ResponseEntity<ApiError> authentication(ApiAuthenticationException exception,
+                                                   HttpServletRequest request) {
+        return error(exception.getStatus(), exception.getMessage(), request);
+    }
+
     @ExceptionHandler(ApiResourceNotFoundException.class)
     public ResponseEntity<ApiError> notFound(ApiResourceNotFoundException exception,
                                              HttpServletRequest request) {
