@@ -49,6 +49,15 @@ public class ClientConsoleService {
                 client, restaurant, Map.of(menuItem, quantity), BigDecimal.ONE);
     }
 
+    public FoodOrder checkout(Long clientId, OrderCart cart) {
+        if (cart == null || cart.isEmpty()) {
+            throw new ValidationException("Cart must contain at least one item");
+        }
+        Client client = requireClient(clientId);
+        Restaurant restaurant = requireRestaurant(cart.getRestaurant().getId());
+        return orderService.createOrder(client, restaurant, cart.getItems(), BigDecimal.ONE);
+    }
+
     public List<FoodOrder> listClientOrders(Long clientId) {
         requireClient(clientId);
         return orderService.findByClientId(clientId);
