@@ -44,14 +44,14 @@ public class ClientConsoleService {
         Client client = requireClient(clientId);
         Restaurant restaurant = requireRestaurant(restaurantId);
         MenuItem menuItem = menuService.findById(menuItemId)
-                .orElseThrow(() -> new ValidationException("Menu item was not found"));
+                .orElseThrow(() -> new ValidationException("Meniu elementas nerastas"));
         return orderService.createOrder(
                 client, restaurant, Map.of(menuItem, quantity), BigDecimal.ONE);
     }
 
     public FoodOrder checkout(Long clientId, OrderCart cart) {
         if (cart == null || cart.isEmpty()) {
-            throw new ValidationException("Cart must contain at least one item");
+            throw new ValidationException("Krepšelyje turi būti bent vienas patiekalas");
         }
         Client client = requireClient(clientId);
         Restaurant restaurant = requireRestaurant(cart.getRestaurant().getId());
@@ -65,15 +65,15 @@ public class ClientConsoleService {
 
     private Client requireClient(Long clientId) {
         User user = userService.findById(clientId)
-                .orElseThrow(() -> new ValidationException("Client was not found"));
+                .orElseThrow(() -> new ValidationException("Klientas nerastas"));
         if (!(user instanceof Client client)) {
-            throw new ValidationException("User is not a client");
+            throw new ValidationException("Naudotojas nėra klientas");
         }
         return client;
     }
 
     private Restaurant requireRestaurant(Long restaurantId) {
         return restaurantService.findById(restaurantId)
-                .orElseThrow(() -> new ValidationException("Restaurant was not found"));
+                .orElseThrow(() -> new ValidationException("Restoranas nerastas"));
     }
 }
