@@ -16,20 +16,20 @@ public class OrderCart {
 
     public OrderCart(Restaurant restaurant) {
         if (restaurant == null || restaurant.getId() == null) {
-            throw new ValidationException("Persisted restaurant is required for cart");
+            throw new ValidationException("Krepšeliui reikalingas išsaugotas restoranas");
         }
         this.restaurant = restaurant;
     }
 
     public void setQuantity(MenuItem item, int quantity) {
         validateItem(item);
-        if (quantity <= 0) throw new ValidationException("Quantity must be greater than zero");
+        if (quantity <= 0) throw new ValidationException("Kiekis turi būti didesnis už nulį");
         items.put(item, quantity);
     }
 
     public void remove(MenuItem item) {
         if (item == null || !items.containsKey(item)) {
-            throw new ValidationException("Menu item is not in the cart");
+            throw new ValidationException("Patiekalo krepšelyje nėra");
         }
         items.remove(item);
     }
@@ -57,14 +57,14 @@ public class OrderCart {
     private void validateItem(MenuItem item) {
         if (item == null || item.getId() == null || item.getRestaurant() == null
                 || item.getRestaurant().getId() == null) {
-            throw new ValidationException("Persisted menu item is required");
+            throw new ValidationException("Išsaugotas meniu elementas yra privalomas");
         }
         if (!restaurant.getId().equals(item.getRestaurant().getId())) {
-            throw new ValidationException("Cart can only contain items from one restaurant");
+            throw new ValidationException("Krepšelyje gali būti tik vieno restorano patiekalai");
         }
-        if (!item.isAvailable()) throw new ValidationException("Unavailable item cannot be added");
+        if (!item.isAvailable()) throw new ValidationException("Neprieinamo patiekalo pridėti negalima");
         if (item.getPrice() == null || item.getPrice().compareTo(BigDecimal.ZERO) <= 0) {
-            throw new ValidationException("Menu item price must be greater than zero");
+            throw new ValidationException("Patiekalo kaina turi būti didesnė už nulį");
         }
     }
 }
