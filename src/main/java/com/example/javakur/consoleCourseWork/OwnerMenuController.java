@@ -17,12 +17,20 @@ import java.util.List;
 class OwnerMenuController extends AbstractRoleMenuController {
     static final List<String> OPTIONS = List.of(
             "Sukurti restoraną", "Mano restoranai", "Valdyti meniu",
-            "Restorano užsakymai", "Keisti užsakymo būseną");
+            "Restorano užsakymai", "Keisti užsakymo būseną",
+            "Užsakymų žinutės ir atsiliepimai");
     private final OwnerConsoleService service;
+    private final OrderInteractionMenu interactions;
 
     OwnerMenuController(OwnerConsoleService service, BufferedReader input, PrintStream output) {
+        this(service, null, input, output);
+    }
+
+    OwnerMenuController(OwnerConsoleService service, OrderInteractionMenu interactions,
+                        BufferedReader input, PrintStream output) {
         super(input, output);
         this.service = service;
+        this.interactions = interactions;
     }
 
     public List<String> options() { return OPTIONS; }
@@ -35,6 +43,7 @@ class OwnerMenuController extends AbstractRoleMenuController {
                 case 3 -> manageMenu(session.userId());
                 case 4 -> showOrders(session.userId());
                 case 5 -> changeStatus(session.userId());
+                case 6 -> interactions.open(session);
                 default -> output.println("Neteisingas pasirinkimas.");
             }
         } catch (RuntimeException e) {
