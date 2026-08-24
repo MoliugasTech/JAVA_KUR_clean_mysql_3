@@ -8,6 +8,7 @@ import com.example.javakur.service.AuthenticationService;
 import com.example.javakur.service.ClientConsoleService;
 import com.example.javakur.service.DriverConsoleService;
 import com.example.javakur.service.OwnerConsoleService;
+import com.example.javakur.service.OrderInteractionService;
 
 import java.io.BufferedReader;
 import java.io.PrintStream;
@@ -21,6 +22,7 @@ public class MenuControl {
     private final ClientConsoleService clientService;
     private final OwnerConsoleService ownerService;
     private final DriverConsoleService driverService;
+    private final OrderInteractionService interactionService;
     private final BufferedReader input;
     private final PrintStream output;
     private final Map<UserRole, RoleMenuController> roleControllers;
@@ -28,10 +30,18 @@ public class MenuControl {
     public MenuControl(AuthenticationService authenticationService,
                        ClientConsoleService clientService, OwnerConsoleService ownerService,
                        DriverConsoleService driverService, BufferedReader input, PrintStream output) {
+        this(authenticationService, clientService, ownerService, driverService, null, input, output);
+    }
+
+    public MenuControl(AuthenticationService authenticationService,
+                       ClientConsoleService clientService, OwnerConsoleService ownerService,
+                       DriverConsoleService driverService, OrderInteractionService interactionService,
+                       BufferedReader input, PrintStream output) {
         this.authenticationService = authenticationService;
         this.clientService = clientService;
         this.ownerService = ownerService;
         this.driverService = driverService;
+        this.interactionService = interactionService;
         this.input = input;
         this.output = output;
         this.roleControllers = createRoleControllers();
@@ -145,9 +155,13 @@ public class MenuControl {
 
     private Map<UserRole, RoleMenuController> createRoleControllers() {
         Map<UserRole, RoleMenuController> controllers = new EnumMap<>(UserRole.class);
-        controllers.put(UserRole.CLIENT, new ClientMenuController(clientService, input, output));
-        controllers.put(UserRole.RESTAURANT_OWNER, new OwnerMenuController(ownerService, input, output));
-        controllers.put(UserRole.DRIVER, new DriverMenuController(driverService, input, output));
+        OrderInteractionMenu interactions = new OrderInteractionMenu(interactionService, input, output);
+        controllers.put(UserRole.CLIENT,
+                new ClientMenuController(clientService, interactions, input, output));
+        controllers.put(UserRole.RESTAURANT_OWNER,
+                new OwnerMenuController(ownerService, interactions, input, output));
+        controllers.put(UserRole.DRIVER,
+                new DriverMenuController(driverService, interactions, input, output));
         controllers.put(UserRole.ADMIN, new AdminMenuController(input, output));
         return controllers;
     }
