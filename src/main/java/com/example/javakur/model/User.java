@@ -43,6 +43,9 @@ public abstract class User {
     @Column(name = "role", nullable = false, length = 50)
     private UserRole role;
 
+    @Column(name = "active", nullable = false)
+    private boolean active = true;
+
     protected User(String username, String passwordHash, String name, String surname,
                    String email, UserRole role) {
         this.username = username;
