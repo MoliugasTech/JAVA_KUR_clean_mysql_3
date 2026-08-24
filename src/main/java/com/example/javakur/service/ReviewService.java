@@ -24,16 +24,16 @@ public class ReviewService {
 
     public Review reviewRestaurant(FoodOrder order, Client author, byte rating, String comment) {
         validateCompletedOrder(order);
-        requireSameUser(order.getClient(), author, "Only the order client can review the restaurant");
+        requireSameUser(order.getClient(), author, "Tik užsakymo klientas gali įvertinti restoraną");
         return createReview(order, author, ReviewType.RESTAURANT,
                 order.getRestaurant(), null, rating, comment);
     }
 
     public Review reviewDriver(FoodOrder order, Client author, byte rating, String comment) {
         validateCompletedOrder(order);
-        requireSameUser(order.getClient(), author, "Only the order client can review the driver");
+        requireSameUser(order.getClient(), author, "Tik užsakymo klientas gali įvertinti vairuotoją");
         if (order.getDriver() == null || order.getDriver().getId() == null) {
-            throw new ValidationException("Completed order does not have a driver");
+            throw new ValidationException("Užbaigtas užsakymas neturi priskirto vairuotojo");
         }
         return createReview(order, author, ReviewType.DRIVER,
                 null, order.getDriver(), rating, comment);
@@ -41,13 +41,13 @@ public class ReviewService {
 
     public Review reviewClient(FoodOrder order, Driver author, byte rating, String comment) {
         validateCompletedOrder(order);
-        requireSameUser(order.getDriver(), author, "Only the assigned driver can review the client");
+        requireSameUser(order.getDriver(), author, "Tik priskirtas vairuotojas gali įvertinti klientą");
         return createReview(order, author, ReviewType.CLIENT,
                 null, order.getClient(), rating, comment);
     }
 
     public List<Review> findByOrderId(Long orderId) {
-        if (orderId == null) throw new ValidationException("Order id is required");
+        if (orderId == null) throw new ValidationException("Užsakymo ID yra privalomas");
         return reviewRepository.findByOrderId(orderId);
     }
 
@@ -65,10 +65,10 @@ public class ReviewService {
 
     private void validateCompletedOrder(FoodOrder order) {
         if (order == null || order.getId() == null) {
-            throw new ValidationException("Persisted order is required");
+            throw new ValidationException("Išsaugotas užsakymas yra privalomas");
         }
         if (order.getStatus() != OrderStatus.COMPLETED) {
-            throw new ValidationException("Only completed orders can be reviewed");
+            throw new ValidationException("Vertinti galima tik užbaigtus užsakymus");
         }
     }
 
@@ -81,7 +81,7 @@ public class ReviewService {
 
     private void validateRating(byte rating) {
         if (rating < 1 || rating > 5) {
-            throw new ValidationException("Rating must be between 1 and 5");
+            throw new ValidationException("Įvertinimas turi būti nuo 1 iki 5");
         }
     }
 
@@ -89,7 +89,7 @@ public class ReviewService {
         if (comment == null || comment.isBlank()) return null;
         String normalized = comment.trim();
         if (normalized.length() > MAX_COMMENT_LENGTH) {
-            throw new ValidationException("Review comment cannot exceed 2000 characters");
+            throw new ValidationException("Atsiliepimo komentaras negali viršyti 2000 simbolių");
         }
         return normalized;
     }
