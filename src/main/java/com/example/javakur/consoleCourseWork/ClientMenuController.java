@@ -18,10 +18,17 @@ class ClientMenuController extends AbstractRoleMenuController {
             "Peržiūrėti restoranus ir meniu", "Sukurti užsakymą",
             "Mano užsakymai", "Užsakymo žinutės ir atsiliepimai");
     private final ClientConsoleService service;
+    private final OrderInteractionMenu interactions;
 
     ClientMenuController(ClientConsoleService service, BufferedReader input, PrintStream output) {
+        this(service, null, input, output);
+    }
+
+    ClientMenuController(ClientConsoleService service, OrderInteractionMenu interactions,
+                         BufferedReader input, PrintStream output) {
         super(input, output);
         this.service = service;
+        this.interactions = interactions;
     }
 
     public List<String> options() { return OPTIONS; }
@@ -32,7 +39,7 @@ class ClientMenuController extends AbstractRoleMenuController {
                 case 1 -> browseRestaurants();
                 case 2 -> createOrder(session.userId());
                 case 3 -> showOrders(session.userId());
-                case 4 -> output.println("Žinutės ir atsiliepimai bus prijungti M13 etape.");
+                case 4 -> interactions.open(session);
                 default -> output.println("Neteisingas pasirinkimas.");
             }
         } catch (ValidationException e) {
