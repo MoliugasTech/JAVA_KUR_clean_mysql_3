@@ -7,7 +7,8 @@ import com.example.javakur.security.UserSession;
 import com.example.javakur.util.PasswordUtil;
 
 public class AuthenticationService {
-    private static final String INVALID_CREDENTIALS = "Invalid username or password";
+    private static final String INVALID_CREDENTIALS = "Neteisingas vartotojo vardas arba slaptažodis";
+    private static final String INACTIVE_ACCOUNT = "Vartotojo paskyra užblokuota";
 
     private final UserRepository userRepository;
 
@@ -25,6 +26,9 @@ public class AuthenticationService {
                 .orElseThrow(() -> new ValidationException(INVALID_CREDENTIALS));
         if (!PasswordUtil.verifyPassword(plainPassword, user.getPasswordHash())) {
             throw new ValidationException(INVALID_CREDENTIALS);
+        }
+        if (!user.isActive()) {
+            throw new ValidationException(INACTIVE_ACCOUNT);
         }
 
         return new UserSession(user.getId(), user.getUsername(), user.getRole());
