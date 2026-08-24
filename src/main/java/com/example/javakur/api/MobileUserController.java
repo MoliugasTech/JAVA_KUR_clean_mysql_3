@@ -36,7 +36,7 @@ public class MobileUserController {
     }
 
     @GetMapping("/clients/{id}")
-    public ClientResponse getClient(@PathVariable Long id) {
+    public ClientResponse getClient(@PathVariable("id") Long id) {
         return ClientResponse.from(service.getClient(id));
     }
 
@@ -47,13 +47,13 @@ public class MobileUserController {
     }
 
     @PutMapping("/clients/{id}")
-    public ClientResponse updateClient(@PathVariable Long id,
+    public ClientResponse updateClient(@PathVariable("id") Long id,
                                        @Valid @RequestBody ClientUpdateRequest request) {
         return ClientResponse.from(service.updateClient(id, request));
     }
 
     @DeleteMapping("/clients/{id}")
-    public ResponseEntity<Void> deleteClient(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteClient(@PathVariable("id") Long id) {
         service.deleteClient(id);
         return ResponseEntity.noContent().build();
     }
@@ -64,7 +64,7 @@ public class MobileUserController {
     }
 
     @GetMapping("/drivers/{id}")
-    public DriverResponse getDriver(@PathVariable Long id) {
+    public DriverResponse getDriver(@PathVariable("id") Long id) {
         return DriverResponse.from(service.getDriver(id));
     }
 
@@ -75,13 +75,13 @@ public class MobileUserController {
     }
 
     @PutMapping("/drivers/{id}")
-    public DriverResponse updateDriver(@PathVariable Long id,
+    public DriverResponse updateDriver(@PathVariable("id") Long id,
                                        @Valid @RequestBody DriverUpdateRequest request) {
         return DriverResponse.from(service.updateDriver(id, request));
     }
 
     @DeleteMapping("/drivers/{id}")
-    public ResponseEntity<Void> deleteDriver(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteDriver(@PathVariable("id") Long id) {
         service.deleteDriver(id);
         return ResponseEntity.noContent().build();
     }
