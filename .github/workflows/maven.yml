@@ -24,4 +24,4 @@ jobs:
           cache: maven
 
       - name: Run tests
-        run: mvn --batch-mode --no-transfer-progress clean test
+        run: xvfb-run --auto-servernum mvn --batch-mode --no-transfer-progress clean test

@@ -9,8 +9,11 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class LoginFormController {
+    private static final Logger LOGGER = LoggerFactory.getLogger(LoginFormController.class);
     @FXML
     private TextField usernameField;
     @FXML
@@ -32,6 +35,9 @@ public class LoginFormController {
         } catch (ValidationException exception) {
             errorLabel.setText(exception.getMessage());
             passwordField.clear();
+        } catch (RuntimeException exception) {
+            LOGGER.error("Nepavyko atidaryti pagrindinės JavaFX formos", exception);
+            errorLabel.setText("Nepavyko atidaryti pagrindinio lango. Detalės rodomos terminale.");
         }
     }
 }
