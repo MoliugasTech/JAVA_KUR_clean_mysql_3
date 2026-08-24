@@ -56,6 +56,7 @@ public class UserFormController {
         if (GuiSession.requireCurrent().role() != UserRole.ADMIN) {
             throw new IllegalStateException("Vartotojų valdymas skirtas tik administratoriui");
         }
+        usersTable.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
         configureColumns();
         roleComboBox.setItems(FXCollections.observableArrayList(UserRole.values()));
         vehicleTypeComboBox.setItems(FXCollections.observableArrayList(VehicleType.values()));

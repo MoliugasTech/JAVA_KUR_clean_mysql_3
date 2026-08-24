@@ -36,7 +36,7 @@
         </VBox>
     </top>
     <center>
-        <TableView fx:id="usersTable" columnResizePolicy="CONSTRAINED_RESIZE_POLICY">
+        <TableView fx:id="usersTable">
             <columns>
                 <TableColumn fx:id="idColumn" text="ID" prefWidth="55"/>
                 <TableColumn fx:id="roleColumn" text="Rolė" prefWidth="130"/>

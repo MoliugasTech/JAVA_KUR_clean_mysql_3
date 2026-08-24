@@ -6,12 +6,16 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
 public class FoodDeliveryApplication extends Application {
+    private static final Logger LOGGER = LoggerFactory.getLogger(FoodDeliveryApplication.class);
     private static FoodDeliveryApplication instance;
     private Stage primaryStage;
 
@@ -53,7 +57,12 @@ public class FoodDeliveryApplication extends Application {
             dialog.setMinHeight(650);
             dialog.showAndWait();
         } catch (IOException exception) {
-            throw new IllegalStateException("Nepavyko atidaryti vartotojų formos", exception);
+            LOGGER.error("Nepavyko atidaryti vartotojų formos", exception);
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Klaida");
+            alert.setHeaderText("Nepavyko atidaryti vartotojų valdymo");
+            alert.setContentText("Išsamesnė informacija rodoma terminale.");
+            alert.showAndWait();
         }
     }
 
