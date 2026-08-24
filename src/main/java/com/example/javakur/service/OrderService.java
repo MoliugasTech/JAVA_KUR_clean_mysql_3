@@ -38,7 +38,7 @@ public class OrderService {
         validateMultiplier(priceMultiplier);
 
         if (requestedItems == null || requestedItems.isEmpty()) {
-            throw new ValidationException("Order must contain at least one item");
+            throw new ValidationException("Užsakyme turi būti bent vienas patiekalas");
         }
 
         FoodOrder order = new FoodOrder(client, restaurant);
@@ -67,32 +67,32 @@ public class OrderService {
     }
 
     public Optional<FoodOrder> findDetailedById(Long id) {
-        if (id == null) throw new ValidationException("Order id is required");
+        if (id == null) throw new ValidationException("Užsakymo ID yra privalomas");
         return orderRepository.findDetailedById(id);
     }
 
     public List<FoodOrder> findByClientId(Long clientId) {
-        if (clientId == null) throw new ValidationException("Client id is required");
+        if (clientId == null) throw new ValidationException("Kliento ID yra privalomas");
         return orderRepository.findByClientId(clientId);
     }
 
     public FoodOrder changeStatus(FoodOrder order, OrderStatus newStatus) {
         validatePersistedOrder(order);
-        if (newStatus == null) throw new ValidationException("New order status is required");
+        if (newStatus == null) throw new ValidationException("Nauja užsakymo būsena yra privaloma");
 
         OrderStatus currentStatus = order.getStatus();
         if (currentStatus == newStatus) {
-            throw new ValidationException("Order already has status " + newStatus);
+            throw new ValidationException("Užsakymas jau turi būseną " + newStatus);
         }
         if (newStatus == OrderStatus.PICKED_UP) {
-            throw new ValidationException("Use assignDriver to pick up an order");
+            throw new ValidationException("Užsakymui paimti naudokite vairuotojo priskyrimą");
         }
 
         EnumSet<OrderStatus> allowed = ALLOWED_TRANSITIONS.getOrDefault(
                 currentStatus, EnumSet.noneOf(OrderStatus.class));
         if (!allowed.contains(newStatus)) {
             throw new ValidationException(
-                    "Invalid order status transition: " + currentStatus + " -> " + newStatus);
+                    "Neleistinas užsakymo būsenos pakeitimas: " + currentStatus + " -> " + newStatus);
         }
 
         order.setStatus(newStatus);
@@ -105,13 +105,13 @@ public class OrderService {
     public FoodOrder assignDriver(FoodOrder order, Driver driver) {
         validatePersistedOrder(order);
         if (driver == null || driver.getId() == null) {
-            throw new ValidationException("Persisted driver is required");
+            throw new ValidationException("Išsaugotas vairuotojas yra privalomas");
         }
         if (order.getStatus() != OrderStatus.READY_FOR_PICKUP) {
-            throw new ValidationException("Driver can only pick up a READY_FOR_PICKUP order");
+            throw new ValidationException("Vairuotojas gali paimti tik READY_FOR_PICKUP užsakymą");
         }
         if (order.getDriver() != null) {
-            throw new ValidationException("Order already has a driver");
+            throw new ValidationException("Užsakymas jau turi priskirtą vairuotoją");
         }
 
         order.setDriver(driver);
@@ -121,41 +121,41 @@ public class OrderService {
 
     private void validatePersistedOrder(FoodOrder order) {
         if (order == null || order.getId() == null) {
-            throw new ValidationException("Persisted order is required");
+            throw new ValidationException("Išsaugotas užsakymas yra privalomas");
         }
     }
 
     private void validateParticipants(Client client, Restaurant restaurant) {
         if (client == null || client.getId() == null) {
-            throw new ValidationException("Persisted client is required");
+            throw new ValidationException("Išsaugotas klientas yra privalomas");
         }
         if (restaurant == null || restaurant.getId() == null) {
-            throw new ValidationException("Persisted restaurant is required");
+            throw new ValidationException("Išsaugotas restoranas yra privalomas");
         }
     }
 
     private void validateMultiplier(BigDecimal priceMultiplier) {
         if (priceMultiplier == null || priceMultiplier.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new ValidationException("Price multiplier must be greater than zero");
+            throw new ValidationException("Kainos daugiklis turi būti didesnis už nulį");
         }
     }
 
     private void validateOrderItem(MenuItem menuItem, Integer quantity, Restaurant restaurant) {
         if (menuItem == null || menuItem.getId() == null) {
-            throw new ValidationException("Persisted menu item is required");
+            throw new ValidationException("Išsaugotas meniu elementas yra privalomas");
         }
         if (!menuItem.isAvailable()) {
-            throw new ValidationException("Unavailable menu item cannot be ordered");
+            throw new ValidationException("Neprieinamo patiekalo užsakyti negalima");
         }
         if (quantity == null || quantity <= 0) {
-            throw new ValidationException("Order item quantity must be greater than zero");
+            throw new ValidationException("Patiekalo kiekis turi būti didesnis už nulį");
         }
         if (menuItem.getPrice() == null || menuItem.getPrice().compareTo(BigDecimal.ZERO) <= 0) {
-            throw new ValidationException("Menu item price must be greater than zero");
+            throw new ValidationException("Patiekalo kaina turi būti didesnė už nulį");
         }
         if (menuItem.getRestaurant() == null || menuItem.getRestaurant().getId() == null
                 || !restaurant.getId().equals(menuItem.getRestaurant().getId())) {
-            throw new ValidationException("All order items must belong to the selected restaurant");
+            throw new ValidationException("Visi patiekalai turi priklausyti pasirinktam restoranui");
         }
     }
 
