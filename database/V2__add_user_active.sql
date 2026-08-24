@@ -1,0 +1,4 @@
+USE food_delivery;
+
+ALTER TABLE users
+    ADD COLUMN active BOOLEAN NOT NULL DEFAULT TRUE AFTER role;
