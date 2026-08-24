@@ -44,4 +44,17 @@ public class ReviewRepository extends BaseRepository<Review, Long> {
             em.close();
         }
     }
+
+    public List<Review> findAllDetailed() {
+        EntityManager em = getEntityManager();
+        try {
+            return em.createQuery(
+                            "SELECT r FROM Review r JOIN FETCH r.author "
+                                    + "LEFT JOIN FETCH r.restaurant LEFT JOIN FETCH r.reviewedUser "
+                                    + "ORDER BY r.createdAt DESC", Review.class)
+                    .getResultList();
+        } finally {
+            em.close();
+        }
+    }
 }
