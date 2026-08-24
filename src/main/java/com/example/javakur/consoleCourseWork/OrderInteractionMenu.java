@@ -11,12 +11,15 @@ import java.io.BufferedReader;
 import java.io.PrintStream;
 import java.util.List;
 
-class OrderInteractionMenu extends AbstractRoleMenuController {
+class OrderInteractionMenu {
     private final OrderInteractionService service;
+    private final BufferedReader input;
+    private final PrintStream output;
 
     OrderInteractionMenu(OrderInteractionService service, BufferedReader input, PrintStream output) {
-        super(input, output);
         this.service = service;
+        this.input = input;
+        this.output = output;
     }
 
     void open(UserSession session) {
@@ -109,5 +112,18 @@ class OrderInteractionMenu extends AbstractRoleMenuController {
 
     private String readComment() {
         return Utils.readLine(input, output, "Komentaras (Enter - be komentaro): ");
+    }
+
+    private void printOrders(List<FoodOrder> orders) {
+        for (int i = 0; i < orders.size(); i++) {
+            FoodOrder order = orders.get(i);
+            output.println((i + 1) + " - Užsakymas " + order.getId()
+                    + " | " + order.getStatus() + " | " + order.getTotalPrice() + " EUR");
+        }
+    }
+
+    private <T> T select(List<T> items, String prompt) {
+        int choice = Utils.readChoiceInRange(input, output, prompt, 0, items.size());
+        return choice == 0 ? null : items.get(choice - 1);
     }
 }
