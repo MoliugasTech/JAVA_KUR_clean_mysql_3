@@ -18,6 +18,7 @@ CREATE TABLE users (
     email VARCHAR(254) NOT NULL,
     phone_number VARCHAR(30) NULL,
     role VARCHAR(30) NOT NULL,
+    active BOOLEAN NOT NULL DEFAULT TRUE,
     delivery_address VARCHAR(500) NULL,
     bonus_points INT NULL,
     vehicle_type VARCHAR(30) NULL,
@@ -194,4 +195,3 @@ CREATE TABLE reviews (
     INDEX idx_reviews_reviewed_user (reviewed_user_id, review_type),
     INDEX idx_reviews_order (order_id)
 ) ENGINE = InnoDB;
-
