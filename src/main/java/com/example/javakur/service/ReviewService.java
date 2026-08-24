@@ -57,7 +57,7 @@ public class ReviewService {
         validateRating(rating);
         String normalizedComment = normalizeComment(comment);
         if (reviewRepository.existsByOrderAuthorAndType(order.getId(), author.getId(), type)) {
-            throw new ValidationException("This order has already been reviewed for " + type);
+            throw new ValidationException("Šis užsakymas jau įvertintas pasirinktam tipui: " + type);
         }
         return reviewRepository.save(new Review(
                 order, author, type, restaurant, reviewedUser, rating, normalizedComment));
