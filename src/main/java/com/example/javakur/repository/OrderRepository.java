@@ -44,6 +44,42 @@ public class OrderRepository extends BaseRepository<FoodOrder, Long> {
         }
     }
 
+    public List<FoodOrder> findByParticipantId(Long userId) {
+        EntityManager em = getEntityManager();
+        try {
+            return em.createQuery(
+                            "SELECT DISTINCT o FROM FoodOrder o "
+                                    + "JOIN FETCH o.client JOIN FETCH o.restaurant r "
+                                    + "JOIN FETCH r.owner LEFT JOIN FETCH o.driver "
+                                    + "WHERE o.client.id = :userId OR o.driver.id = :userId "
+                                    + "OR r.owner.id = :userId ORDER BY o.createdAt DESC",
+                            FoodOrder.class)
+                    .setParameter("userId", userId)
+                    .getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
+    public Optional<FoodOrder> findParticipantOrder(Long orderId, Long userId) {
+        EntityManager em = getEntityManager();
+        try {
+            return em.createQuery(
+                            "SELECT DISTINCT o FROM FoodOrder o "
+                                    + "JOIN FETCH o.client JOIN FETCH o.restaurant r "
+                                    + "JOIN FETCH r.owner LEFT JOIN FETCH o.driver "
+                                    + "WHERE o.id = :orderId AND (o.client.id = :userId "
+                                    + "OR o.driver.id = :userId OR r.owner.id = :userId)",
+                            FoodOrder.class)
+                    .setParameter("orderId", orderId)
+                    .setParameter("userId", userId)
+                    .getResultStream()
+                    .findFirst();
+        } finally {
+            em.close();
+        }
+    }
+
     public List<FoodOrder> findByRestaurantId(Long restaurantId) {
         EntityManager em = getEntityManager();
         try {
