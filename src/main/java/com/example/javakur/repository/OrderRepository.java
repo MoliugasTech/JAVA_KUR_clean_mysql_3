@@ -172,4 +172,17 @@ public class OrderRepository extends BaseRepository<FoodOrder, Long> {
             em.close();
         }
     }
+
+    public List<FoodOrder> findAllWithParticipants() {
+        EntityManager em = getEntityManager();
+        try {
+            return em.createQuery(
+                            "SELECT o FROM FoodOrder o JOIN FETCH o.client "
+                                    + "JOIN FETCH o.restaurant LEFT JOIN FETCH o.driver "
+                                    + "ORDER BY o.createdAt DESC", FoodOrder.class)
+                    .getResultList();
+        } finally {
+            em.close();
+        }
+    }
 }
