@@ -147,7 +147,7 @@ public class UserFormController {
         }
     }
 
-    private void refreshUsers() {
+    protected void refreshUsers() {
         allUsers.setAll(GuiContext.adminService().listUsers(GuiSession.requireCurrent().userId()));
         applyFilter();
     }
