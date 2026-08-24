@@ -27,7 +27,7 @@ public class OrderMessageService {
 
     public List<OrderMessage> getConversation(FoodOrder order, User viewer) {
         if (order == null || order.getId() == null) {
-            throw new ValidationException("Persisted order is required");
+            throw new ValidationException("Išsaugotas užsakymas yra privalomas");
         }
         validateSender(order, viewer);
         return messageRepository.findByOrderId(order.getId());
@@ -35,29 +35,29 @@ public class OrderMessageService {
 
     private void validateOrder(FoodOrder order) {
         if (order == null || order.getId() == null) {
-            throw new ValidationException("Persisted order is required");
+            throw new ValidationException("Išsaugotas užsakymas yra privalomas");
         }
         if (order.getStatus() == OrderStatus.COMPLETED || order.getStatus() == OrderStatus.CANCELLED) {
-            throw new ValidationException("Messages cannot be sent for a finished order");
+            throw new ValidationException("Baigtam užsakymui žinučių siųsti negalima");
         }
     }
 
     private void validateSender(FoodOrder order, User sender) {
         if (sender == null || sender.getId() == null) {
-            throw new ValidationException("Persisted sender is required");
+            throw new ValidationException("Išsaugotas siuntėjas yra privalomas");
         }
         if (!messageRepository.isOrderParticipant(order.getId(), sender.getId())) {
-            throw new ValidationException("User is not a participant of this order");
+            throw new ValidationException("Naudotojas nėra šio užsakymo dalyvis");
         }
     }
 
     private String normalizeContent(String content) {
         if (content == null || content.isBlank()) {
-            throw new ValidationException("Message cannot be blank");
+            throw new ValidationException("Žinutė negali būti tuščia");
         }
         String normalized = content.trim();
         if (normalized.length() > MAX_MESSAGE_LENGTH) {
-            throw new ValidationException("Message cannot exceed 2000 characters");
+            throw new ValidationException("Žinutė negali viršyti 2000 simbolių");
         }
         return normalized;
     }
