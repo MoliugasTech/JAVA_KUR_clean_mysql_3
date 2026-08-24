@@ -52,4 +52,15 @@ public class UserRepository extends BaseRepository<User, Long> {
             em.close();
         }
     }
+
+    public List<User> findAllOrdered() {
+        EntityManager em = getEntityManager();
+        try {
+            return em.createQuery(
+                    "SELECT u FROM User u ORDER BY u.role, u.surname, u.name", User.class)
+                    .getResultList();
+        } finally {
+            em.close();
+        }
+    }
 }
