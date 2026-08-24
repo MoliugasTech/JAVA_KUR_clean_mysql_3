@@ -70,7 +70,8 @@ class ConsoleMenuTest {
         menu.run();
 
         String output = bytes.toString(StandardCharsets.UTF_8);
-        assertTrue(output.contains("Prisijungti nepavyko: Invalid username or password"));
+        assertTrue(output.contains(
+                "Prisijungti nepavyko: Neteisingas vartotojo vardas arba slaptažodis"));
         assertTrue(output.contains("Programa baigta."));
     }
 
