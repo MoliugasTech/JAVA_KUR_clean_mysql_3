@@ -5,6 +5,7 @@ import com.example.javakur.model.Driver;
 import com.example.javakur.model.FoodOrder;
 import com.example.javakur.model.OrderMessage;
 import com.example.javakur.model.OrderStatus;
+import com.example.javakur.service.LoyaltyPointService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,13 +22,16 @@ public class DriverOrderRestService {
     private final MobileUserRepository userRepository;
     private final DriverOrderRepository orderRepository;
     private final ClientOrderMessageRepository messageRepository;
+    private final LoyaltyPointService loyaltyPointService;
 
     public DriverOrderRestService(MobileUserRepository userRepository,
                                   DriverOrderRepository orderRepository,
-                                  ClientOrderMessageRepository messageRepository) {
+                                  ClientOrderMessageRepository messageRepository,
+                                  LoyaltyPointService loyaltyPointService) {
         this.userRepository = userRepository;
         this.orderRepository = orderRepository;
         this.messageRepository = messageRepository;
+        this.loyaltyPointService = loyaltyPointService;
     }
 
     public List<OrderSummaryResponse> available(Long driverId) {
@@ -76,6 +80,7 @@ public class DriverOrderRestService {
         order.setStatus(newStatus);
         if (newStatus == OrderStatus.COMPLETED) {
             order.setCompletedAt(LocalDateTime.now());
+            loyaltyPointService.awardFor(order);
         }
         return OrderDetailResponse.from(orderRepository.save(order));
     }
