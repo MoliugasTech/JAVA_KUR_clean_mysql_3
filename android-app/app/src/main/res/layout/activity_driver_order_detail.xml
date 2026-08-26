@@ -79,6 +79,18 @@
         tools:text="Pradėti pristatymą"
         tools:visibility="visible" />
 
+    <Button
+        android:id="@+id/reviewClientButton"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginTop="8dp"
+        android:text="@string/review_client"
+        android:textAllCaps="false"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/driverStatusButton" />
+
     <TextView
         android:id="@+id/driverConversationTitle"
         android:layout_width="0dp"
@@ -90,7 +102,7 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/driverStatusButton" />
+        app:layout_constraintTop_toBottomOf="@id/reviewClientButton" />
 
     <LinearLayout
         android:id="@+id/driverMessageComposer"

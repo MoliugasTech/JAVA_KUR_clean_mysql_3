@@ -27,6 +27,14 @@ public final class Constants {
         return orderUrl(orderId) + "/messages";
     }
 
+    public static String clientReviewsUrl(long orderId) {
+        return orderUrl(orderId) + "/reviews";
+    }
+
+    public static String clientReviewUrl(long orderId, String target) {
+        return clientReviewsUrl(orderId) + "/" + target;
+    }
+
     public static String driverOrderUrl(long orderId) {
         return DRIVER_ORDERS_BASE_URL + "/" + orderId;
     }
@@ -41,5 +49,13 @@ public final class Constants {
 
     public static String driverMessagesUrl(long orderId) {
         return driverOrderUrl(orderId) + "/messages";
+    }
+
+    public static String driverReviewsUrl(long orderId) {
+        return driverOrderUrl(orderId) + "/reviews";
+    }
+
+    public static String driverReviewUrl(long orderId) {
+        return driverReviewsUrl(orderId) + "/client";
     }
 }

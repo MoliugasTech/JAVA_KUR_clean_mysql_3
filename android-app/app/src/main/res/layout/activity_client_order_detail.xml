@@ -63,18 +63,48 @@
         app:layout_constraintTop_toBottomOf="@id/orderItemsTitle"
         tools:text="2 × Sriuba — 9.00 €" />
 
+    <LinearLayout
+        android:id="@+id/clientReviewActions"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:orientation="horizontal"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/orderDetailItems">
+
+        <Button
+            android:id="@+id/reviewRestaurantButton"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:text="@string/review_restaurant"
+            android:textAllCaps="false"
+            android:visibility="gone" />
+
+        <Button
+            android:id="@+id/reviewDriverButton"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_marginStart="8dp"
+            android:layout_weight="1"
+            android:text="@string/review_driver"
+            android:textAllCaps="false"
+            android:visibility="gone" />
+    </LinearLayout>
+
     <TextView
         android:id="@+id/conversationTitle"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="12dp"
         android:text="@string/conversation"
         android:textColor="@color/forest"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/orderDetailItems" />
+        app:layout_constraintTop_toBottomOf="@id/clientReviewActions" />
 
     <LinearLayout
         android:id="@+id/messageComposer"
