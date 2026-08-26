@@ -1,12 +1,10 @@
 package com.example.javakur.service;
 
 import com.example.javakur.exception.ValidationException;
-import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalTime;
 
-@Service
 public class TimeBasedPricingService {
     public static final BigDecimal PEAK_MULTIPLIER = new BigDecimal("1.200");
     public static final BigDecimal OFF_PEAK_MULTIPLIER = new BigDecimal("0.900");
