@@ -100,9 +100,13 @@ public class ClientOrderDetailActivity extends AppCompatActivity {
             title.setText(getString(R.string.order_number, order.getId()));
             String driver = order.getDriverName().isBlank()
                     ? getString(R.string.driver_not_assigned) : order.getDriverName();
-            summary.setText(getString(R.string.order_detail_summary,
+            String summaryText = getString(R.string.order_detail_summary,
                     order.getRestaurantName(), StatusLabels.toLithuanian(order.getStatus()),
-                    order.getCreatedAt(), driver, order.getTotalPrice().toPlainString()));
+                    order.getCreatedAt(), driver, order.getTotalPrice().toPlainString());
+            if (!order.getCancellationReason().isBlank()) {
+                summaryText += "\nAtmetimo priežastis: " + order.getCancellationReason();
+            }
+            summary.setText(summaryText);
             StringBuilder itemText = new StringBuilder();
             for (OrderLineInfo item : order.getItems()) {
                 if (itemText.length() > 0) itemText.append('\n');

@@ -20,6 +20,8 @@
             <Label fx:id="roleLabel" wrapText="true" styleClass="sidebar-role"/>
             <Button fx:id="userManagementButton" text="Vartotojų valdymas"
                     maxWidth="Infinity" onAction="#handleUsers"/>
+            <Button fx:id="ownerOrdersButton" text="Restorano užsakymai"
+                    maxWidth="Infinity" onAction="#handleOwnerOrders"/>
             <Region VBox.vgrow="ALWAYS"/>
             <Button text="Atsijungti" maxWidth="Infinity" styleClass="secondary-button"
                     onAction="#handleLogout"/>
@@ -35,7 +37,7 @@
                                 <Insets top="42" right="42" bottom="42" left="42"/>
                             </padding>
                             <Label text="Valdymo skydelis" styleClass="title"/>
-                            <Label text="Minimalus desktop programos pagrindas paruoštas. Administratorius gali atidaryti vartotojų CRUD formą, o restorano funkcijos bus prijungtos vėlesniame etape."
+                            <Label text="Administratorius valdo vartotojus, o restorano savininkas priima, ruošia ir administruoja savo restoranų užsakymus."
                                    wrapText="true" styleClass="subtitle"/>
                         </VBox>
                     </content>

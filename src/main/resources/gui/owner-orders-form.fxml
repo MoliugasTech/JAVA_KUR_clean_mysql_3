@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.example.javakur.fxControllers.OwnerOrdersFormController">
+    <top>
+        <VBox spacing="12" styleClass="toolbar-panel">
+            <padding><Insets top="22" right="24" bottom="18" left="24"/></padding>
+            <Label text="Restorano užsakymai" styleClass="title"/>
+            <Label text="Filtruokite užsakymus ir valdykite tik restorano atsakomybės būsenas."
+                   styleClass="subtitle"/>
+            <HBox spacing="10">
+                <ComboBox fx:id="restaurantCombo" promptText="Restoranas" prefWidth="220"/>
+                <ComboBox fx:id="statusFilter" promptText="Visos būsenos" prefWidth="175"/>
+                <DatePicker fx:id="fromDatePicker" promptText="Data nuo"/>
+                <DatePicker fx:id="toDatePicker" promptText="Data iki"/>
+                <TextField fx:id="clientFilter" promptText="Klientas" HBox.hgrow="ALWAYS"/>
+                <Button text="Filtruoti" onAction="#handleApplyFilters"/>
+                <Button text="Išvalyti" styleClass="secondary-button-light"
+                        onAction="#handleClearFilters"/>
+                <Button text="Atnaujinti" styleClass="secondary-button"
+                        onAction="#handleRefresh"/>
+            </HBox>
+        </VBox>
+    </top>
+    <center>
+        <SplitPane dividerPositions="0.56">
+            <items>
+                <TableView fx:id="ordersTable">
+                    <columns>
+                        <TableColumn fx:id="orderIdColumn" text="Nr." prefWidth="65"/>
+                        <TableColumn fx:id="orderStatusColumn" text="Būsena" prefWidth="135"/>
+                        <TableColumn fx:id="clientColumn" text="Klientas" prefWidth="220"/>
+                        <TableColumn fx:id="createdColumn" text="Sukurta" prefWidth="145"/>
+                        <TableColumn fx:id="totalColumn" text="Suma, €" prefWidth="90"/>
+                        <TableColumn fx:id="driverPolicyColumn" text="Vairuotojui" prefWidth="115"/>
+                    </columns>
+                </TableView>
+                <VBox spacing="12" styleClass="edit-panel">
+                    <padding><Insets top="20" right="22" bottom="20" left="22"/></padding>
+                    <Label text="Užsakymo detalės" styleClass="section-title"/>
+                    <Label fx:id="orderInfoLabel" text="Pasirinkite užsakymą." wrapText="true"/>
+                    <Label fx:id="cancellationReasonLabel" wrapText="true" styleClass="error"/>
+                    <TableView fx:id="itemsTable" VBox.vgrow="ALWAYS">
+                        <columns>
+                            <TableColumn fx:id="itemNameColumn" text="Patiekalas" prefWidth="210"/>
+                            <TableColumn fx:id="itemQuantityColumn" text="Kiekis" prefWidth="70"/>
+                            <TableColumn fx:id="itemPriceColumn" text="Kaina" prefWidth="80"/>
+                            <TableColumn fx:id="itemTotalColumn" text="Suma" prefWidth="80"/>
+                        </columns>
+                    </TableView>
+                    <HBox spacing="8">
+                        <Button fx:id="acceptButton" text="Priimti" onAction="#handleAccept"/>
+                        <Button fx:id="prepareButton" text="Pradėti ruošti"
+                                onAction="#handlePrepare"/>
+                        <Button fx:id="readyButton" text="Paruošta atsiėmimui"
+                                onAction="#handleReady"/>
+                    </HBox>
+                    <HBox spacing="8">
+                        <Button fx:id="rejectButton" text="Atmesti su priežastimi"
+                                styleClass="danger-button" onAction="#handleReject"/>
+                        <Button fx:id="removeItemButton" text="Pašalinti patiekalą"
+                                styleClass="secondary-button-light" onAction="#handleRemoveItem"/>
+                    </HBox>
+                    <Button fx:id="toggleDriverButton" text="Blokuoti vairuotojo paėmimą"
+                            maxWidth="Infinity" styleClass="secondary-button"
+                            onAction="#handleToggleDriver"/>
+                </VBox>
+            </items>
+        </SplitPane>
+    </center>
+    <bottom>
+        <HBox styleClass="toolbar-panel">
+            <padding><Insets top="10" right="24" bottom="10" left="24"/></padding>
+            <Label fx:id="statusLabel" text="Pasirinkite restoraną." styleClass="form-hint"/>
+        </HBox>
+    </bottom>
+</BorderPane>

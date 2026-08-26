@@ -69,8 +69,8 @@ public final class ClientOrderDtos {
                                       Long driverId, String driverName,
                                       LocalDateTime createdAt, LocalDateTime completedAt,
                                       BigDecimal subtotal, BigDecimal priceMultiplier,
-                                      BigDecimal totalPrice, boolean messagingAllowed,
-                                      List<OrderItemResponse> items) {
+                                      BigDecimal totalPrice, String cancellationReason,
+                                      boolean messagingAllowed, List<OrderItemResponse> items) {
         public static OrderDetailResponse from(FoodOrder order) {
             Long driverId = order.getDriver() == null ? null : order.getDriver().getId();
             String driverName = order.getDriver() == null ? null
@@ -81,7 +81,7 @@ public final class ClientOrderDtos {
                     order.getRestaurant().getId(), order.getRestaurant().getName(),
                     driverId, driverName, order.getCreatedAt(), order.getCompletedAt(),
                     order.getSubtotal(), order.getPriceMultiplier(), order.getTotalPrice(),
-                    messagingAllowed,
+                    order.getCancellationReason(), messagingAllowed,
                     order.getItems().stream().map(OrderItemResponse::from).toList());
         }
     }

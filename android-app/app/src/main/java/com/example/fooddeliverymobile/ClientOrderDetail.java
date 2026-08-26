@@ -13,6 +13,7 @@ public class ClientOrderDetail {
     private BigDecimal subtotal;
     private BigDecimal priceMultiplier;
     private BigDecimal totalPrice;
+    private String cancellationReason;
     private boolean messagingAllowed;
     private List<OrderLineInfo> items;
 
@@ -24,6 +25,7 @@ public class ClientOrderDetail {
     public BigDecimal getSubtotal() { return subtotal == null ? BigDecimal.ZERO : subtotal; }
     public BigDecimal getPriceMultiplier() { return priceMultiplier == null ? BigDecimal.ONE : priceMultiplier; }
     public BigDecimal getTotalPrice() { return totalPrice == null ? BigDecimal.ZERO : totalPrice; }
+    public String getCancellationReason() { return cancellationReason == null ? "" : cancellationReason; }
     public boolean isMessagingAllowed() { return messagingAllowed; }
     public List<OrderLineInfo> getItems() { return items == null ? List.of() : items; }
 }

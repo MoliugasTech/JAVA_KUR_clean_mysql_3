@@ -15,6 +15,8 @@ public class MainFormController {
     private Label roleLabel;
     @FXML
     private Button userManagementButton;
+    @FXML
+    private Button ownerOrdersButton;
 
     @FXML
     private void initialize() {
@@ -22,13 +24,21 @@ public class MainFormController {
         usernameLabel.setText("Sveiki, " + session.username());
         roleLabel.setText("Rolė: " + roleName(session.role()));
         boolean admin = session.role() == UserRole.ADMIN;
+        boolean owner = session.role() == UserRole.RESTAURANT_OWNER;
         userManagementButton.setVisible(admin);
         userManagementButton.setManaged(admin);
+        ownerOrdersButton.setVisible(owner);
+        ownerOrdersButton.setManaged(owner);
     }
 
     @FXML
     private void handleUsers() {
         FoodDeliveryApplication.getInstance().showUserManagement();
+    }
+
+    @FXML
+    private void handleOwnerOrders() {
+        FoodDeliveryApplication.getInstance().showOwnerOrders();
     }
 
     @FXML

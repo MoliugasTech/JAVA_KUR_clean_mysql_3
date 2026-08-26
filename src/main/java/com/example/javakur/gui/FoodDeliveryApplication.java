@@ -66,6 +66,28 @@ public class FoodDeliveryApplication extends Application {
         }
     }
 
+    public void showOwnerOrders() {
+        try {
+            Stage dialog = new Stage();
+            dialog.setTitle("Restorano užsakymų valdymas");
+            dialog.initOwner(primaryStage);
+            dialog.initModality(Modality.WINDOW_MODAL);
+            Scene scene = new Scene(load("/gui/owner-orders-form.fxml"), 1280, 800);
+            addStylesheet(scene);
+            dialog.setScene(scene);
+            dialog.setMinWidth(1100);
+            dialog.setMinHeight(700);
+            dialog.showAndWait();
+        } catch (IOException exception) {
+            LOGGER.error("Nepavyko atidaryti restorano užsakymų formos", exception);
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Klaida");
+            alert.setHeaderText("Nepavyko atidaryti užsakymų valdymo");
+            alert.setContentText("Išsamesnė informacija rodoma terminale.");
+            alert.showAndWait();
+        }
+    }
+
     private void setPrimaryScene(String resource, double width, double height) {
         try {
             Scene scene = new Scene(load(resource), width, height);
