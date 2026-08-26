@@ -30,3 +30,8 @@ Jeigu Workbench `SOURCE` komandos nenaudoja, galima atsidaryti
 Visi veiksmai serveryje dar kartą tikrina restorano nuosavybę, leistiną būseną ir
 vairuotojo priskyrimą. Vairuotojo užsakymo paėmimas naudoja duomenų bazės užraktą
 ir po užrakinimo pakartotinai patikrina, ar restoranas vis dar leidžia paėmimą.
+
+## Automatinė patikra
+
+PR vykdo atskirus Maven ir Android testų workflow. Rankinis testas atliekamas tik
+abiem patikroms pasibaigus sėkmingai.
