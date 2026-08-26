@@ -6,7 +6,11 @@ public final class Constants {
     public static final String LOGOUT_URL = HOME_URL + "api/auth/logout";
     public static final String CLIENTS_URL = HOME_URL + "api/clients";
     public static final String DRIVERS_URL = HOME_URL + "api/drivers";
+    public static final String RESTAURANTS_URL = HOME_URL + "api/catalog/restaurants";
 
-    private Constants() {
+    private Constants() {}
+
+    public static String menuUrl(long restaurantId) {
+        return RESTAURANTS_URL + "/" + restaurantId + "/menu-items";
     }
 }

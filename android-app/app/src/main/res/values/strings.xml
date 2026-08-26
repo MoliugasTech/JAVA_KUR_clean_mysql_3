@@ -28,6 +28,15 @@
     <string name="client_home_description">Restoranų, krepšelio ir užsakymų ekranai bus prijungti M21 etape.</string>
     <string name="driver_home_description">Laisvų pristatymų ir mano užsakymų ekranai bus prijungti vėlesniame etape.</string>
     <string name="logout">Atsijungti</string>
+    <string name="view_restaurants">Peržiūrėti restoranus</string>
+    <string name="restaurants">Restoranai</string>
+    <string name="menu">Meniu</string>
+    <string name="back">← Grįžti</string>
+    <string name="restaurant_details">Adresas: %1$s\nTipas: %2$s\nDarbo laikas: %3$s–%4$s</string>
+    <string name="no_restaurants">Restoranų nerasta</string>
+    <string name="no_menu_items">Šis restoranas neturi prieinamų patiekalų</string>
+    <string name="error_catalog_failed">Nepavyko gauti restoranų sąrašo</string>
+    <string name="error_menu_failed">Nepavyko gauti restorano meniu</string>
     <string name="error_enter_credentials">Įveskite vartotojo vardą ir slaptažodį</string>
     <string name="error_server_connection">Nepavyko susisiekti su serveriu</string>
     <string name="error_invalid_server_response">Serveris grąžino netinkamą atsakymą</string>
