@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Food Delivery</string>
+    <string name="app_name_uppercase">FOOD DELIVERY</string>
+    <string name="mobile_users">Klientams ir vairuotojams</string>
+    <string name="login_title">Prisijungimas</string>
+    <string name="username">Vartotojo vardas</string>
+    <string name="password">Slaptažodis</string>
+    <string name="login">Prisijungti</string>
+    <string name="create_account">Kurti paskyrą</string>
+    <string name="registration_title">Nauja paskyra</string>
+    <string name="registration_subtitle">Pasirinkite kliento arba vairuotojo paskyrą</string>
+    <string name="name">Vardas</string>
+    <string name="surname">Pavardė</string>
+    <string name="email">El. paštas</string>
+    <string name="phone_optional">Telefono numeris (neprivaloma)</string>
+    <string name="account_type">Paskyros tipas</string>
+    <string name="client">Klientas</string>
+    <string name="driver">Vairuotojas</string>
+    <string name="delivery_address">Pristatymo adresas</string>
+    <string name="vehicle_type">Transporto priemonė</string>
+    <string name="register">Registruotis</string>
+    <string name="back_to_login">Grįžti į prisijungimą</string>
+    <string name="registration_success">Paskyra sukurta. Dabar galite prisijungti.</string>
+    <string name="greeting">Sveiki, %1$s</string>
+    <string name="client_space">Kliento erdvė</string>
+    <string name="driver_space">Vairuotojo erdvė</string>
+    <string name="client_home_description">Restoranų, krepšelio ir užsakymų ekranai bus prijungti M21 etape.</string>
+    <string name="driver_home_description">Laisvų pristatymų ir mano užsakymų ekranai bus prijungti vėlesniame etape.</string>
+    <string name="logout">Atsijungti</string>
+    <string name="error_enter_credentials">Įveskite vartotojo vardą ir slaptažodį</string>
+    <string name="error_server_connection">Nepavyko susisiekti su serveriu</string>
+    <string name="error_invalid_server_response">Serveris grąžino netinkamą atsakymą</string>
+    <string name="error_mobile_roles_only">Mobilioji programėlė skirta tik klientams ir vairuotojams</string>
+    <string name="error_login_failed">Prisijungti nepavyko</string>
+    <string name="error_required_registration_fields">Užpildykite visus privalomus laukus</string>
+    <string name="error_delivery_address_required">Įveskite pristatymo adresą</string>
+    <string name="error_registration_failed">Registracija nepavyko</string>
+
+    <string-array name="vehicle_types">
+        <item>CAR</item>
+        <item>MOTORCYCLE</item>
+        <item>BICYCLE</item>
+        <item>SCOOTER</item>
+        <item>OTHER</item>
+    </string-array>
+</resources>

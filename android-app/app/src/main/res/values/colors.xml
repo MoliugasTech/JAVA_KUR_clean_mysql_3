@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="forest">#12372A</color>
+    <color name="forest_light">#2A6049</color>
+    <color name="forest_muted">#C6D6CE</color>
+    <color name="orange">#EB681F</color>
+    <color name="cream">#F5F7F2</color>
+    <color name="muted">#6B7972</color>
+    <color name="error">#B3261E</color>
+    <color name="white">#FFFFFF</color>
+</resources>
