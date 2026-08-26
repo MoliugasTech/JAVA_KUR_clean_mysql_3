@@ -12,14 +12,16 @@ import com.example.javakur.repository.OrderRepository;
 import com.example.javakur.repository.RestaurantRepository;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.EnumSet;
 import java.util.List;
+import java.util.Locale;
 
 public class OwnerConsoleService {
     private static final EnumSet<OrderStatus> OWNER_STATUSES = EnumSet.of(
             OrderStatus.CONFIRMED, OrderStatus.PREPARING,
-            OrderStatus.READY_FOR_PICKUP, OrderStatus.CANCELLED);
+            OrderStatus.READY_FOR_PICKUP);
 
     private final UserService userService;
     private final RestaurantService restaurantService;
@@ -84,6 +86,28 @@ public class OwnerConsoleService {
         return orderRepository.findByRestaurantId(restaurantId);
     }
 
+    public List<FoodOrder> listOrders(Long ownerId, Long restaurantId,
+                                      OrderStatus status, LocalDate fromDate,
+                                      LocalDate toDate, String clientQuery) {
+        List<FoodOrder> orders = listOrders(ownerId, restaurantId);
+        if (fromDate != null && toDate != null && fromDate.isAfter(toDate)) {
+            throw new ValidationException("Datos nuo negali būti vėlesnė už datą iki");
+        }
+        String query = clientQuery == null ? "" : clientQuery.trim().toLowerCase(Locale.ROOT);
+        return orders.stream()
+                .filter(order -> status == null || order.getStatus() == status)
+                .filter(order -> fromDate == null || order.getCreatedAt() != null
+                        && !order.getCreatedAt().toLocalDate().isBefore(fromDate))
+                .filter(order -> toDate == null || order.getCreatedAt() != null
+                        && !order.getCreatedAt().toLocalDate().isAfter(toDate))
+                .filter(order -> query.isEmpty() || matchesClient(order, query))
+                .toList();
+    }
+
+    public FoodOrder getOrder(Long ownerId, Long orderId) {
+        return requireOwnedOrder(ownerId, orderId);
+    }
+
     public FoodOrder changeOrderStatus(Long ownerId, Long orderId, OrderStatus newStatus) {
         if (newStatus == null || !OWNER_STATUSES.contains(newStatus)) {
             throw new ValidationException("Restorano savininkas negali nustatyti būsenos " + newStatus);
@@ -91,6 +115,39 @@ public class OwnerConsoleService {
         FoodOrder order = orderRepository.findOwnedByRestaurantOwner(orderId, ownerId)
                 .orElseThrow(() -> new ValidationException("Užsakymas nepriklauso šiam savininkui"));
         return orderService.changeStatus(order, newStatus);
+    }
+
+    public FoodOrder cancelOrder(Long ownerId, Long orderId, String reason) {
+        return orderService.cancel(requireOwnedOrder(ownerId, orderId), reason);
+    }
+
+    public FoodOrder removeOrderItem(Long ownerId, Long orderId, Long orderItemId) {
+        return orderService.removeItem(requireOwnedOrder(ownerId, orderId), orderItemId);
+    }
+
+    public FoodOrder setDriverAssignmentAllowed(Long ownerId, Long orderId, boolean allowed) {
+        return orderService.setDriverAssignmentAllowed(
+                requireOwnedOrder(ownerId, orderId), allowed);
+    }
+
+    private boolean matchesClient(FoodOrder order, String query) {
+        if (order.getClient() == null) return false;
+        return contains(order.getClient().getUsername(), query)
+                || contains(order.getClient().getName(), query)
+                || contains(order.getClient().getSurname(), query);
+    }
+
+    private boolean contains(String value, String query) {
+        return value != null && value.toLowerCase(Locale.ROOT).contains(query);
+    }
+
+    private FoodOrder requireOwnedOrder(Long ownerId, Long orderId) {
+        if (ownerId == null || orderId == null) {
+            throw new ValidationException("Savininko ir užsakymo ID yra privalomi");
+        }
+        return orderRepository.findOwnedByRestaurantOwner(orderId, ownerId)
+                .orElseThrow(() -> new ValidationException(
+                        "Užsakymas nepriklauso šiam savininkui"));
     }
 
     private RestaurantOwner requireOwner(Long ownerId) {

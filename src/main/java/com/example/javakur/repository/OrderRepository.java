@@ -86,6 +86,7 @@ public class OrderRepository extends BaseRepository<FoodOrder, Long> {
             return em.createQuery(
                             "SELECT o FROM FoodOrder o "
                                     + "JOIN FETCH o.client JOIN FETCH o.restaurant "
+                                    + "LEFT JOIN FETCH o.driver "
                                     + "WHERE o.restaurant.id = :restaurantId ORDER BY o.createdAt DESC",
                             FoodOrder.class)
                     .setParameter("restaurantId", restaurantId)
@@ -99,9 +100,10 @@ public class OrderRepository extends BaseRepository<FoodOrder, Long> {
         EntityManager em = getEntityManager();
         try {
             return em.createQuery(
-                            "SELECT o FROM FoodOrder o "
+                            "SELECT DISTINCT o FROM FoodOrder o "
                                     + "JOIN FETCH o.restaurant r JOIN FETCH r.owner "
                                     + "JOIN FETCH o.client LEFT JOIN FETCH o.driver "
+                                    + "LEFT JOIN FETCH o.items i LEFT JOIN FETCH i.menuItem "
                                     + "WHERE o.id = :orderId AND r.owner.id = :ownerId",
                             FoodOrder.class)
                     .setParameter("orderId", orderId)
@@ -118,7 +120,8 @@ public class OrderRepository extends BaseRepository<FoodOrder, Long> {
         try {
             return em.createQuery(
                             "SELECT o FROM FoodOrder o JOIN FETCH o.restaurant JOIN FETCH o.client "
-                                    + "WHERE o.status = :status AND o.driver IS NULL ORDER BY o.createdAt",
+                                    + "WHERE o.status = :status AND o.driver IS NULL "
+                                    + "AND o.driverAssignmentAllowed = true ORDER BY o.createdAt",
                             FoodOrder.class)
                     .setParameter("status", OrderStatus.READY_FOR_PICKUP)
                     .getResultList();

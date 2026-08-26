@@ -59,6 +59,9 @@ public class OrderService {
         if (newStatus == OrderStatus.PICKED_UP) {
             throw new ValidationException("Užsakymui paimti naudokite vairuotojo priskyrimą");
         }
+        if (newStatus == OrderStatus.CANCELLED) {
+            throw new ValidationException("Užsakymui atmesti naudokite atmetimą su priežastimi");
+        }
 
         EnumSet<OrderStatus> allowed = ALLOWED_TRANSITIONS.getOrDefault(
                 currentStatus, EnumSet.noneOf(OrderStatus.class));
@@ -74,6 +77,58 @@ public class OrderService {
         return orderRepository.update(order);
     }
 
+    public FoodOrder cancel(FoodOrder order, String reason) {
+        validatePersistedOrder(order);
+        String normalizedReason = reason == null ? "" : reason.trim();
+        if (normalizedReason.isEmpty()) {
+            throw new ValidationException("Atmetimo priežastis yra privaloma");
+        }
+        if (normalizedReason.length() > 500) {
+            throw new ValidationException("Atmetimo priežastis negali būti ilgesnė nei 500 simbolių");
+        }
+        EnumSet<OrderStatus> allowed = ALLOWED_TRANSITIONS.getOrDefault(
+                order.getStatus(), EnumSet.noneOf(OrderStatus.class));
+        if (!allowed.contains(OrderStatus.CANCELLED)) {
+            throw new ValidationException(
+                    "Užsakymo su būsena " + order.getStatus() + " atmesti nebegalima");
+        }
+        order.setCancellationReason(normalizedReason);
+        order.setStatus(OrderStatus.CANCELLED);
+        return orderRepository.update(order);
+    }
+
+    public FoodOrder removeItem(FoodOrder order, Long orderItemId) {
+        validateRestaurantEditable(order);
+        if (orderItemId == null) {
+            throw new ValidationException("Užsakymo patiekalo ID yra privalomas");
+        }
+        OrderItem item = order.getItems().stream()
+                .filter(value -> orderItemId.equals(value.getId()))
+                .findFirst()
+                .orElseThrow(() -> new ValidationException("Užsakymo patiekalas nerastas"));
+        if (order.getItems().size() <= 1) {
+            throw new ValidationException(
+                    "Negalima pašalinti paskutinio patiekalo – užsakymas negali būti tuščias");
+        }
+        order.removeItem(item);
+        recalculate(order);
+        return orderRepository.update(order);
+    }
+
+    public FoodOrder setDriverAssignmentAllowed(FoodOrder order, boolean allowed) {
+        validatePersistedOrder(order);
+        if (order.getDriver() != null
+                || order.getStatus() == OrderStatus.PICKED_UP
+                || order.getStatus() == OrderStatus.DELIVERING
+                || order.getStatus() == OrderStatus.COMPLETED
+                || order.getStatus() == OrderStatus.CANCELLED) {
+            throw new ValidationException(
+                    "Vairuotojo pridėjimo taisyklės po užsakymo paėmimo keisti negalima");
+        }
+        order.setDriverAssignmentAllowed(allowed);
+        return orderRepository.update(order);
+    }
+
     public FoodOrder assignDriver(FoodOrder order, Driver driver) {
         validatePersistedOrder(order);
         if (driver == null || driver.getId() == null) {
@@ -85,10 +140,36 @@ public class OrderService {
         if (order.getDriver() != null) {
             throw new ValidationException("Užsakymas jau turi priskirtą vairuotoją");
         }
+        if (!order.isDriverAssignmentAllowed()) {
+            throw new ValidationException("Restoranas uždraudė pridėti vairuotoją prie šio užsakymo");
+        }
 
         order.setDriver(driver);
         order.setStatus(OrderStatus.PICKED_UP);
         return orderRepository.update(order);
+    }
+
+    private void validateRestaurantEditable(FoodOrder order) {
+        validatePersistedOrder(order);
+        if (order.getDriver() != null
+                || !EnumSet.of(OrderStatus.CREATED, OrderStatus.CONFIRMED,
+                        OrderStatus.PREPARING).contains(order.getStatus())) {
+            throw new ValidationException(
+                    "Užsakymo patiekalus galima keisti tik iki jo paruošimo ir paėmimo");
+        }
+    }
+
+    private void recalculate(FoodOrder order) {
+        BigDecimal subtotal = order.getItems().stream()
+                .map(item -> item.getPriceAtPurchase()
+                        .multiply(BigDecimal.valueOf(item.getQuantity())))
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .setScale(MONEY_SCALE, RoundingMode.HALF_UP);
+        BigDecimal multiplier = order.getPriceMultiplier() == null
+                ? BigDecimal.ONE : order.getPriceMultiplier();
+        order.setSubtotal(subtotal);
+        order.setTotalPrice(subtotal.multiply(multiplier)
+                .setScale(MONEY_SCALE, RoundingMode.HALF_UP));
     }
 
     private void validatePersistedOrder(FoodOrder order) {

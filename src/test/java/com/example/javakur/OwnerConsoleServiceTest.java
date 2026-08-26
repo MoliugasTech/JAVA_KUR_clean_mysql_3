@@ -3,6 +3,7 @@ package com.example.javakur;
 import com.example.javakur.exception.ValidationException;
 import com.example.javakur.model.FoodOrder;
 import com.example.javakur.model.MenuItem;
+import com.example.javakur.model.OrderItem;
 import com.example.javakur.model.OrderStatus;
 import com.example.javakur.model.Restaurant;
 import com.example.javakur.model.RestaurantOwner;
@@ -88,6 +89,61 @@ class OwnerConsoleServiceTest {
                 service.changeOrderStatus(owner.getId(), order.getId(), OrderStatus.CONFIRMED).getStatus());
         assertThrows(ValidationException.class,
                 () -> service.changeOrderStatus(owner.getId(), order.getId(), OrderStatus.DELIVERING));
+    }
+
+    @Test
+    void ownerRejectsOrderWithReason() {
+        FoodOrder order = new FoodOrder();
+        order.setId(4L);
+        order.setRestaurant(restaurant);
+        order.setStatus(OrderStatus.CREATED);
+        orders.order = order;
+
+        FoodOrder rejected = service.cancelOrder(
+                owner.getId(), order.getId(), "Nebėra reikalingų ingredientų");
+
+        assertEquals(OrderStatus.CANCELLED, rejected.getStatus());
+        assertEquals("Nebėra reikalingų ingredientų", rejected.getCancellationReason());
+    }
+
+    @Test
+    void ownerRemovesItemAndRecalculatesPrice() {
+        MenuItem first = new MenuItem("Pirma", "", new BigDecimal("5.00"), restaurant);
+        first.setId(20L);
+        MenuItem second = new MenuItem("Antra", "", new BigDecimal("4.00"), restaurant);
+        second.setId(21L);
+        OrderItem firstLine = new OrderItem(first, 1, new BigDecimal("5.00"));
+        firstLine.setId(30L);
+        OrderItem secondLine = new OrderItem(second, 2, new BigDecimal("4.00"));
+        secondLine.setId(31L);
+        FoodOrder order = new FoodOrder();
+        order.setId(4L);
+        order.setRestaurant(restaurant);
+        order.setStatus(OrderStatus.CONFIRMED);
+        order.setPriceMultiplier(new BigDecimal("1.200"));
+        order.addItem(firstLine);
+        order.addItem(secondLine);
+        orders.order = order;
+
+        FoodOrder updated = service.removeOrderItem(owner.getId(), order.getId(), 31L);
+
+        assertEquals(1, updated.getItems().size());
+        assertEquals(new BigDecimal("5.00"), updated.getSubtotal());
+        assertEquals(new BigDecimal("6.00"), updated.getTotalPrice());
+    }
+
+    @Test
+    void ownerCanBlockDriverBeforePickup() {
+        FoodOrder order = new FoodOrder();
+        order.setId(4L);
+        order.setRestaurant(restaurant);
+        order.setStatus(OrderStatus.PREPARING);
+        orders.order = order;
+
+        FoodOrder updated = service.setDriverAssignmentAllowed(
+                owner.getId(), order.getId(), false);
+
+        assertFalse(updated.isDriverAssignmentAllowed());
     }
 
     @Test

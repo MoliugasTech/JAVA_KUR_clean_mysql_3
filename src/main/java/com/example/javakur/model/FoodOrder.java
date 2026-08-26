@@ -32,9 +32,15 @@ public class FoodOrder {
     @JoinColumn(name = "driver_id")
     private Driver driver;
 
+    @Column(name = "driver_assignment_allowed", nullable = false)
+    private boolean driverAssignmentAllowed = true;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 50)
     private OrderStatus status = OrderStatus.CREATED;
+
+    @Column(name = "cancellation_reason", length = 500)
+    private String cancellationReason;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;

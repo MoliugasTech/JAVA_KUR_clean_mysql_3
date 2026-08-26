@@ -14,7 +14,8 @@ import java.util.Optional;
 
 public interface DriverOrderRepository extends JpaRepository<FoodOrder, Long> {
     @EntityGraph(attributePaths = {"client", "restaurant"})
-    List<FoodOrder> findByStatusAndDriverIsNullOrderByCreatedAtAsc(OrderStatus status);
+    List<FoodOrder> findByStatusAndDriverIsNullAndDriverAssignmentAllowedTrueOrderByCreatedAtAsc(
+            OrderStatus status);
 
     @EntityGraph(attributePaths = {"client", "restaurant"})
     List<FoodOrder> findByDriverIdOrderByCreatedAtDesc(Long driverId);

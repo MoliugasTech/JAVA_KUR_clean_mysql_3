@@ -37,7 +37,8 @@ public class DriverOrderRestService {
     public List<OrderSummaryResponse> available(Long driverId) {
         activeDriver(driverId);
         return orderRepository
-                .findByStatusAndDriverIsNullOrderByCreatedAtAsc(OrderStatus.READY_FOR_PICKUP)
+                .findByStatusAndDriverIsNullAndDriverAssignmentAllowedTrueOrderByCreatedAtAsc(
+                        OrderStatus.READY_FOR_PICKUP)
                 .stream().map(OrderSummaryResponse::from).toList();
     }
 
@@ -54,6 +55,10 @@ public class DriverOrderRestService {
                 .orElseThrow(() -> new ApiResourceNotFoundException("Užsakymas nerastas"));
         if (order.getStatus() != OrderStatus.READY_FOR_PICKUP || order.getDriver() != null) {
             throw new ValidationException("Užsakymas jau paimtas arba dar neparuoštas pristatymui");
+        }
+        if (!order.isDriverAssignmentAllowed()) {
+            throw new ValidationException(
+                    "Restoranas uždraudė pridėti vairuotoją prie šio užsakymo");
         }
         order.setDriver(driver);
         order.setStatus(OrderStatus.PICKED_UP);

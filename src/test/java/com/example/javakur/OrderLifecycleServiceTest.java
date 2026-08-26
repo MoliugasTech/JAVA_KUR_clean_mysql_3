@@ -69,11 +69,22 @@ class OrderLifecycleServiceTest {
     void cancelledOrderIsTerminal() {
         FoodOrder order = persistedOrder();
 
-        service.changeStatus(order, OrderStatus.CANCELLED);
+        service.cancel(order, "Restoranas šiuo metu nedirba");
 
         assertThrows(ValidationException.class,
                 () -> service.changeStatus(order, OrderStatus.CONFIRMED));
         assertEquals(OrderStatus.CANCELLED, order.getStatus());
+        assertEquals("Restoranas šiuo metu nedirba", order.getCancellationReason());
+    }
+
+    @Test
+    void blockedOrderCannotBeTakenByDriver() {
+        FoodOrder order = persistedOrder();
+        order.setStatus(OrderStatus.READY_FOR_PICKUP);
+        order.setDriverAssignmentAllowed(false);
+
+        assertThrows(ValidationException.class,
+                () -> service.assignDriver(order, persistedDriver()));
     }
 
     private FoodOrder persistedOrder() {

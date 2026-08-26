@@ -126,8 +126,14 @@ class OwnerMenuController extends AbstractRoleMenuController {
         for (int i = 0; i < statuses.size(); i++) output.println((i + 1) + " - " + statuses.get(i));
         OrderStatus status = statuses.get(Utils.readChoiceInRange(
                 input, output, "Naujos būsenos numeris: ", 1, statuses.size()) - 1);
-        output.println("Užsakymo būsena pakeista į "
-                + service.changeOrderStatus(ownerId, order.getId(), status).getStatus());
+        FoodOrder updated;
+        if (status == OrderStatus.CANCELLED) {
+            String reason = Utils.readRequired(input, output, "Atmetimo priežastis: ");
+            updated = service.cancelOrder(ownerId, order.getId(), reason);
+        } else {
+            updated = service.changeOrderStatus(ownerId, order.getId(), status);
+        }
+        output.println("Užsakymo būsena pakeista į " + updated.getStatus());
     }
 
     private Restaurant selectRestaurant(Long ownerId) {

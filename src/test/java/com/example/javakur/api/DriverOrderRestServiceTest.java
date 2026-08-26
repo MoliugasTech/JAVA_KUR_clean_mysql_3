@@ -41,8 +41,9 @@ class DriverOrderRestServiceTest {
         Driver driver = driver(9L);
         FoodOrder ready = order(12L, OrderStatus.READY_FOR_PICKUP);
         when(userRepository.findActiveDriverById(9L)).thenReturn(Optional.of(driver));
-        when(orderRepository.findByStatusAndDriverIsNullOrderByCreatedAtAsc(
-                OrderStatus.READY_FOR_PICKUP)).thenReturn(List.of(ready));
+        when(orderRepository
+                .findByStatusAndDriverIsNullAndDriverAssignmentAllowedTrueOrderByCreatedAtAsc(
+                        OrderStatus.READY_FOR_PICKUP)).thenReturn(List.of(ready));
 
         var result = service.available(9L);
 
@@ -63,6 +64,18 @@ class DriverOrderRestServiceTest {
         assertEquals(OrderStatus.PICKED_UP, result.status());
         assertEquals(driver, ready.getDriver());
         verify(orderRepository).save(ready);
+    }
+
+    @Test
+    void driverCannotAcceptOrderBlockedByRestaurant() {
+        Driver driver = driver(9L);
+        FoodOrder ready = order(12L, OrderStatus.READY_FOR_PICKUP);
+        ready.setDriverAssignmentAllowed(false);
+        when(userRepository.findActiveDriverById(9L)).thenReturn(Optional.of(driver));
+        when(orderRepository.findForUpdateById(12L)).thenReturn(Optional.of(ready));
+
+        assertThrows(ValidationException.class, () -> service.accept(9L, 12L));
+        verify(orderRepository, never()).save(any(FoodOrder.class));
     }
 
     @Test
