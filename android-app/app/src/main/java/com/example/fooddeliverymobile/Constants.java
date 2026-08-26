@@ -35,6 +35,11 @@ public final class Constants {
         return clientReviewsUrl(orderId) + "/" + target;
     }
 
+    public static String profileUrl(MobileRole role, long userId) {
+        String resource = role == MobileRole.CLIENT ? "clients" : "drivers";
+        return HOME_URL + "api/" + resource + "/" + userId;
+    }
+
     public static String driverOrderUrl(long orderId) {
         return DRIVER_ORDERS_BASE_URL + "/" + orderId;
     }

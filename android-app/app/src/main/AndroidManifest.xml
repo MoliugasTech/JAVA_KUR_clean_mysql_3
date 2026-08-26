@@ -10,6 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.FoodDeliveryMobile"
         android:usesCleartextTraffic="true">
+        <activity android:name=".ProfileActivity" android:exported="false" />
         <activity android:name=".DriverOrderDetailActivity" android:exported="false" />
         <activity android:name=".DriverOrdersActivity" android:exported="false" />
         <activity android:name=".ClientOrderDetailActivity" android:exported="false" />

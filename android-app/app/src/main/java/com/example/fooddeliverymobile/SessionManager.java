@@ -45,6 +45,10 @@ public class SessionManager {
         return MobileRole.fromApi(preferences.getString(ROLE, null));
     }
 
+    public void updateUsername(String username) {
+        preferences.edit().putString(USERNAME, username).apply();
+    }
+
     public void clear() {
         preferences.edit().clear().apply();
     }

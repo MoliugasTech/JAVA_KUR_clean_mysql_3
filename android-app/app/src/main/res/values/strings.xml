@@ -116,6 +116,16 @@ Suma: %6$s €</string>
     <string name="error_review_rating">Pasirinkite bent vieną žvaigždutę</string>
     <string name="error_review_failed">Nepavyko išsaugoti atsiliepimo</string>
 
+    <string name="my_profile">Mano profilis</string>
+    <string name="new_password_optional">Naujas slaptažodis (neprivalomas)</string>
+    <string name="save_profile">Išsaugoti pakeitimus</string>
+    <string name="bonus_points_value">Bonus taškai: %1$d</string>
+    <string name="profile_saved">Profilio pakeitimai išsaugoti</string>
+    <string name="error_profile_load">Nepavyko gauti profilio duomenų</string>
+    <string name="error_profile_save">Nepavyko išsaugoti profilio pakeitimų</string>
+    <string name="error_required_profile_fields">Užpildykite visus privalomus laukus</string>
+    <string name="error_password_length">Naują slaptažodį turi sudaryti bent 8 simboliai</string>
+
     <string-array name="vehicle_types">
         <item>CAR</item>
         <item>MOTORCYCLE</item>

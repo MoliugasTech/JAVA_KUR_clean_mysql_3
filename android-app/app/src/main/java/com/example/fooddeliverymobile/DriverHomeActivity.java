@@ -15,6 +15,12 @@ public class DriverHomeActivity extends BaseHomeActivity {
         super.onCreate(savedInstanceState);
         configureButton(R.id.availableDeliveriesButton, DriverOrdersActivity.MODE_AVAILABLE);
         configureButton(R.id.driverOrdersButton, DriverOrdersActivity.MODE_MINE);
+        Button profile = findViewById(R.id.profileButton);
+        if (profile != null) {
+            profile.setVisibility(View.VISIBLE);
+            profile.setOnClickListener(view ->
+                    startActivity(new Intent(this, ProfileActivity.class)));
+        }
     }
 
     private void configureButton(int buttonId, String mode) {

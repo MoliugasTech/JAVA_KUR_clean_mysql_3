@@ -15,6 +15,7 @@ public class ClientHomeActivity extends BaseHomeActivity {
         super.onCreate(savedInstanceState);
         configureButton(R.id.restaurantsButton, ClientRestaurantsActivity.class);
         configureButton(R.id.ordersButton, ClientOrdersActivity.class);
+        configureButton(R.id.profileButton, ProfileActivity.class);
     }
 
     private void configureButton(int buttonId, Class<?> activityClass) {
