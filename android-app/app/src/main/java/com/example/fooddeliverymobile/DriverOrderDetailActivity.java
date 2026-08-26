@@ -38,6 +38,7 @@ public class DriverOrderDetailActivity extends AppCompatActivity {
     private Button statusButton;
     private EditText messageInput;
     private Button sendButton;
+    private Button reviewClientButton;
     private String nextStatus;
 
     @Override
@@ -59,9 +60,11 @@ public class DriverOrderDetailActivity extends AppCompatActivity {
         statusButton = findViewById(R.id.driverStatusButton);
         messageInput = findViewById(R.id.driverMessageInput);
         sendButton = findViewById(R.id.driverSendMessageButton);
+        reviewClientButton = findViewById(R.id.reviewClientButton);
         findViewById(R.id.driverOrderBackButton).setOnClickListener(view -> finish());
         statusButton.setOnClickListener(view -> changeStatus());
         sendButton.setOnClickListener(view -> sendMessage());
+        reviewClientButton.setOnClickListener(view -> openClientReview());
         loadOrder();
     }
 
@@ -73,7 +76,9 @@ public class DriverOrderDetailActivity extends AppCompatActivity {
                         Constants.driverOrderUrl(orderId), session.getToken());
                 RestOperations.HttpResult messagesResult = RestOperations.sendGet(
                         Constants.driverMessagesUrl(orderId), session.getToken());
-                handler.post(() -> showOrder(orderResult, messagesResult));
+                RestOperations.HttpResult reviewsResult = RestOperations.sendGet(
+                        Constants.driverReviewsUrl(orderId), session.getToken());
+                handler.post(() -> showOrder(orderResult, messagesResult, reviewsResult));
             } catch (IOException exception) {
                 handler.post(() -> showError(R.string.error_server_connection));
             }
@@ -81,9 +86,11 @@ public class DriverOrderDetailActivity extends AppCompatActivity {
     }
 
     private void showOrder(RestOperations.HttpResult orderResult,
-                           RestOperations.HttpResult messagesResult) {
+                           RestOperations.HttpResult messagesResult,
+                           RestOperations.HttpResult reviewsResult) {
         progress.setVisibility(View.GONE);
-        if (!orderResult.isSuccessful() || !messagesResult.isSuccessful()) {
+        if (!orderResult.isSuccessful() || !messagesResult.isSuccessful()
+                || !reviewsResult.isSuccessful()) {
             showError(R.string.error_driver_order_details_failed);
             return;
         }
@@ -105,11 +112,64 @@ public class DriverOrderDetailActivity extends AppCompatActivity {
             items.setText(itemText);
             configureStatusButton(order.getNextStatus());
             setMessagingAllowed(order.isMessagingAllowed());
-            OrderMessageInfo[] data = gson.fromJson(messagesResult.body(), OrderMessageInfo[].class);
-            showMessages(data == null ? List.of() : Arrays.asList(data));
+            OrderMessageInfo[] messageData = gson.fromJson(
+                    messagesResult.body(), OrderMessageInfo[].class);
+            showMessages(messageData == null ? List.of() : Arrays.asList(messageData));
+            ReviewInfo[] reviewData = gson.fromJson(reviewsResult.body(), ReviewInfo[].class);
+            configureReviewButton(order, reviewData == null ? new ReviewInfo[0] : reviewData);
         } catch (RuntimeException exception) {
             showError(R.string.error_invalid_server_response);
         }
+    }
+
+    private void configureReviewButton(DriverOrderDetail order, ReviewInfo[] reviews) {
+        boolean reviewed = false;
+        for (ReviewInfo review : reviews) {
+            if ("CLIENT".equals(review.getType())) {
+                reviewed = true;
+                break;
+            }
+        }
+        reviewClientButton.setVisibility(
+                "COMPLETED".equals(order.getStatus()) && !reviewed
+                        ? View.VISIBLE : View.GONE);
+        reviewClientButton.setEnabled(true);
+    }
+
+    private void openClientReview() {
+        ReviewDialogHelper.show(this, R.string.review_client,
+                this::submitClientReview);
+    }
+
+    private void submitClientReview(int rating, String comment) {
+        reviewClientButton.setEnabled(false);
+        JsonObject json = new JsonObject();
+        json.addProperty("rating", rating);
+        json.addProperty("comment", comment);
+        executor.execute(() -> {
+            try {
+                RestOperations.HttpResult result = RestOperations.sendPost(
+                        Constants.driverReviewUrl(orderId),
+                        gson.toJson(json), session.getToken());
+                handler.post(() -> {
+                    if (result.isSuccessful()) {
+                        Toast.makeText(this, R.string.review_sent,
+                                Toast.LENGTH_SHORT).show();
+                        loadOrder();
+                    } else {
+                        reviewClientButton.setEnabled(true);
+                        Toast.makeText(this, R.string.error_review_failed,
+                                Toast.LENGTH_LONG).show();
+                    }
+                });
+            } catch (IOException exception) {
+                handler.post(() -> {
+                    reviewClientButton.setEnabled(true);
+                    Toast.makeText(this, R.string.error_server_connection,
+                            Toast.LENGTH_LONG).show();
+                });
+            }
+        });
     }
 
     private void configureStatusButton(String status) {

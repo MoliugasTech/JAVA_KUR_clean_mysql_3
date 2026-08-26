@@ -37,6 +37,8 @@ public class ClientOrderDetailActivity extends AppCompatActivity {
     private ListView messages;
     private EditText messageInput;
     private Button sendButton;
+    private Button reviewRestaurantButton;
+    private Button reviewDriverButton;
 
     @Override
     protected void onCreate(Bundle state) {
@@ -56,8 +58,14 @@ public class ClientOrderDetailActivity extends AppCompatActivity {
         messages = findViewById(R.id.messagesList);
         messageInput = findViewById(R.id.messageInput);
         sendButton = findViewById(R.id.sendMessageButton);
+        reviewRestaurantButton = findViewById(R.id.reviewRestaurantButton);
+        reviewDriverButton = findViewById(R.id.reviewDriverButton);
         findViewById(R.id.orderDetailBackButton).setOnClickListener(view -> finish());
         sendButton.setOnClickListener(view -> sendMessage());
+        reviewRestaurantButton.setOnClickListener(view -> openReview(
+                "restaurant", R.string.review_restaurant));
+        reviewDriverButton.setOnClickListener(view -> openReview(
+                "driver", R.string.review_driver));
         loadOrder();
     }
 
@@ -69,7 +77,9 @@ public class ClientOrderDetailActivity extends AppCompatActivity {
                         Constants.orderUrl(orderId), session.getToken());
                 RestOperations.HttpResult messagesResult = RestOperations.sendGet(
                         Constants.messagesUrl(orderId), session.getToken());
-                handler.post(() -> showOrder(orderResult, messagesResult));
+                RestOperations.HttpResult reviewsResult = RestOperations.sendGet(
+                        Constants.clientReviewsUrl(orderId), session.getToken());
+                handler.post(() -> showOrder(orderResult, messagesResult, reviewsResult));
             } catch (IOException exception) {
                 handler.post(() -> showError(R.string.error_server_connection));
             }
@@ -77,9 +87,11 @@ public class ClientOrderDetailActivity extends AppCompatActivity {
     }
 
     private void showOrder(RestOperations.HttpResult orderResult,
-                           RestOperations.HttpResult messagesResult) {
+                           RestOperations.HttpResult messagesResult,
+                           RestOperations.HttpResult reviewsResult) {
         progress.setVisibility(View.GONE);
-        if (!orderResult.isSuccessful() || !messagesResult.isSuccessful()) {
+        if (!orderResult.isSuccessful() || !messagesResult.isSuccessful()
+                || !reviewsResult.isSuccessful()) {
             showError(R.string.error_order_details_failed);
             return;
         }
@@ -101,11 +113,72 @@ public class ClientOrderDetailActivity extends AppCompatActivity {
             items.setText(itemText);
             setMessagingAllowed(order.isMessagingAllowed());
 
-            OrderMessageInfo[] data = gson.fromJson(messagesResult.body(), OrderMessageInfo[].class);
-            showMessages(data == null ? List.of() : Arrays.asList(data));
+            OrderMessageInfo[] messageData = gson.fromJson(
+                    messagesResult.body(), OrderMessageInfo[].class);
+            showMessages(messageData == null ? List.of() : Arrays.asList(messageData));
+            ReviewInfo[] reviewData = gson.fromJson(reviewsResult.body(), ReviewInfo[].class);
+            configureReviewButtons(order, reviewData == null ? new ReviewInfo[0] : reviewData);
         } catch (RuntimeException exception) {
             showError(R.string.error_invalid_server_response);
         }
+    }
+
+    private void configureReviewButtons(ClientOrderDetail order, ReviewInfo[] reviews) {
+        boolean completed = "COMPLETED".equals(order.getStatus());
+        boolean restaurantReviewed = hasReview(reviews, "RESTAURANT");
+        boolean driverReviewed = hasReview(reviews, "DRIVER");
+        reviewRestaurantButton.setVisibility(
+                completed && !restaurantReviewed ? View.VISIBLE : View.GONE);
+        reviewDriverButton.setVisibility(
+                completed && !order.getDriverName().isBlank() && !driverReviewed
+                        ? View.VISIBLE : View.GONE);
+        reviewRestaurantButton.setEnabled(true);
+        reviewDriverButton.setEnabled(true);
+    }
+
+    private boolean hasReview(ReviewInfo[] reviews, String type) {
+        for (ReviewInfo review : reviews) {
+            if (type.equals(review.getType())) return true;
+        }
+        return false;
+    }
+
+    private void openReview(String target, int titleResource) {
+        ReviewDialogHelper.show(this, titleResource,
+                (rating, comment) -> submitReview(target, rating, comment));
+    }
+
+    private void submitReview(String target, int rating, String comment) {
+        Button button = "restaurant".equals(target)
+                ? reviewRestaurantButton : reviewDriverButton;
+        button.setEnabled(false);
+        JsonObject json = new JsonObject();
+        json.addProperty("rating", rating);
+        json.addProperty("comment", comment);
+        executor.execute(() -> {
+            try {
+                RestOperations.HttpResult result = RestOperations.sendPost(
+                        Constants.clientReviewUrl(orderId, target),
+                        gson.toJson(json), session.getToken());
+                handler.post(() -> handleReviewSent(result, button));
+            } catch (IOException exception) {
+                handler.post(() -> {
+                    button.setEnabled(true);
+                    Toast.makeText(this, R.string.error_server_connection,
+                            Toast.LENGTH_LONG).show();
+                });
+            }
+        });
+    }
+
+    private void handleReviewSent(RestOperations.HttpResult result, Button button) {
+        if (!result.isSuccessful()) {
+            button.setEnabled(true);
+            Toast.makeText(this, R.string.error_review_failed, Toast.LENGTH_LONG).show();
+            return;
+        }
+        Toast.makeText(this, R.string.review_sent, Toast.LENGTH_SHORT).show();
+        loadOrder();
     }
 
     private void showMessages(List<OrderMessageInfo> data) {

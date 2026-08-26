@@ -32,7 +32,9 @@
     <string name="restaurants">Restoranai</string>
     <string name="menu">Meniu</string>
     <string name="back">← Grįžti</string>
-    <string name="restaurant_details">Adresas: %1$s\nTipas: %2$s\nDarbo laikas: %3$s–%4$s</string>
+    <string name="restaurant_details">Adresas: %1$s
+Tipas: %2$s
+Darbo laikas: %3$s–%4$s</string>
     <string name="no_restaurants">Restoranų nerasta</string>
     <string name="no_menu_items">Šis restoranas neturi prieinamų patiekalų</string>
     <string name="error_catalog_failed">Nepavyko gauti restoranų sąrašo</string>
@@ -62,7 +64,11 @@
     <string name="error_orders_failed">Nepavyko gauti užsakymų</string>
     <string name="error_order_details_failed">Nepavyko gauti užsakymo duomenų</string>
     <string name="order_number">Užsakymas #%1$d</string>
-    <string name="order_detail_summary">Restoranas: %1$s\nBūsena: %2$s\nSukurtas: %3$s\nVairuotojas: %4$s\nSuma: %5$s €</string>
+    <string name="order_detail_summary">Restoranas: %1$s
+Būsena: %2$s
+Sukurtas: %3$s
+Vairuotojas: %4$s
+Suma: %5$s €</string>
     <string name="driver_not_assigned">Dar nepriskirtas</string>
     <string name="order_items">Patiekalai</string>
     <string name="conversation">Susirašinėjimas</string>
@@ -80,17 +86,35 @@
     <string name="no_driver_orders">Dar neturite pristatymų</string>
     <string name="error_driver_orders_failed">Nepavyko gauti pristatymų</string>
     <string name="accept_delivery">Pasiimti pristatymą</string>
-    <string name="accept_delivery_confirmation">Restoranas: %1$s\nPristatyti į: %2$s\n\nAr tikrai norite pasiimti šį užsakymą?</string>
+    <string name="accept_delivery_confirmation">Restoranas: %1$s
+Pristatyti į: %2$s
+
+Ar tikrai norite pasiimti šį užsakymą?</string>
     <string name="accept">Pasiimti</string>
     <string name="cancel">Atšaukti</string>
     <string name="delivery_accepted">Pristatymas priskirtas jums</string>
     <string name="error_accept_delivery">Užsakymo pasiimti nepavyko. Galbūt jį jau paėmė kitas vairuotojas.</string>
     <string name="error_driver_order_details_failed">Nepavyko gauti pristatymo duomenų</string>
-    <string name="driver_order_detail_summary">Restoranas: %1$s\nPaimti iš: %2$s\nKlientas: %3$s\nPristatyti į: %4$s\nBūsena: %5$s\nSuma: %6$s €</string>
+    <string name="driver_order_detail_summary">Restoranas: %1$s
+Paimti iš: %2$s
+Klientas: %3$s
+Pristatyti į: %4$s
+Būsena: %5$s
+Suma: %6$s €</string>
     <string name="start_delivery">Pradėti pristatymą</string>
     <string name="complete_delivery">Pažymėti pristatytu</string>
     <string name="order_status_updated">Užsakymo būsena atnaujinta</string>
     <string name="error_status_update">Nepavyko pakeisti užsakymo būsenos</string>
+
+    <string name="review_restaurant">Vertinti restoraną</string>
+    <string name="review_driver">Vertinti vairuotoją</string>
+    <string name="review_client">Vertinti klientą</string>
+    <string name="review_rating_hint">Pasirinkite įvertinimą nuo 1 iki 5</string>
+    <string name="review_comment_hint">Komentaras (neprivalomas)</string>
+    <string name="submit_review">Pateikti</string>
+    <string name="review_sent">Atsiliepimas išsaugotas</string>
+    <string name="error_review_rating">Pasirinkite bent vieną žvaigždutę</string>
+    <string name="error_review_failed">Nepavyko išsaugoti atsiliepimo</string>
 
     <string-array name="vehicle_types">
         <item>CAR</item>
