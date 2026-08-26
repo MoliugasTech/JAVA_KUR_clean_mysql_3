@@ -24,7 +24,7 @@ etapuose. M20 tikslas – patikrinti visą grandinę `Android → REST → MySQL
 2. Pasirinkti **Open**.
 3. Atidaryti ne visą Maven projektą, o aplanką `JAVA_KUR_M07/android-app`.
 4. Palaukti, kol baigsis Gradle Sync.
-5. Device Manager sukurti Android API 37 emuliatorių.
+5. Device Manager sukurti Android API 36 emuliatorių.
 
 ## Backend'o paleidimas
 
@@ -44,7 +44,7 @@ lokalaus tinklo IP adresą ir leisti ryšį macOS ugniasienėje.
 ## Patikrinimas
 
 1. Paleisti Spring Boot backend'ą.
-2. Android Studio paleisti `app` API 37 emuliatoriuje.
+2. Android Studio paleisti `app` API 36 emuliatoriuje.
 3. Prisijungti aktyvia kliento arba vairuotojo paskyra.
 4. Patikrinti, kad atsidaro teisingos rolės pradinis ekranas.
 5. Paspausti **Atsijungti** ir patikrinti grįžimą į prisijungimą.
@@ -56,5 +56,4 @@ cd android-app
 ./gradlew testDebugUnitTest
 ```
 
-Technologijų versijos parinktos pagal 2026-08 oficialią Android dokumentaciją:
-AGP 9.3, Gradle 9.5, API 37 ir Compose BOM `2026.08.00`.
+Naudojamas AGP 9.3, Gradle 9.5, API 36 ir Compose BOM `2026.08.00`.
