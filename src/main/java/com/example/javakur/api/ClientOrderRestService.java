@@ -8,10 +8,10 @@ import com.example.javakur.model.OrderMessage;
 import com.example.javakur.model.OrderStatus;
 import com.example.javakur.model.Restaurant;
 import com.example.javakur.service.OrderFactory;
+import com.example.javakur.service.TimeBasedPricingService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,17 +30,20 @@ public class ClientOrderRestService {
     private final CatalogMenuItemRepository menuItemRepository;
     private final ClientOrderRepository orderRepository;
     private final ClientOrderMessageRepository messageRepository;
+    private final TimeBasedPricingService pricingService;
 
     public ClientOrderRestService(MobileUserRepository userRepository,
                                   CatalogRestaurantRepository restaurantRepository,
                                   CatalogMenuItemRepository menuItemRepository,
                                   ClientOrderRepository orderRepository,
-                                  ClientOrderMessageRepository messageRepository) {
+                                  ClientOrderMessageRepository messageRepository,
+                                  TimeBasedPricingService pricingService) {
         this.userRepository = userRepository;
         this.restaurantRepository = restaurantRepository;
         this.menuItemRepository = menuItemRepository;
         this.orderRepository = orderRepository;
         this.messageRepository = messageRepository;
+        this.pricingService = pricingService;
     }
 
     @Transactional
@@ -60,7 +63,8 @@ public class ClientOrderRestService {
             requestedItems.put(item, requested.quantity());
         }
 
-        FoodOrder order = OrderFactory.create(client, restaurant, requestedItems, BigDecimal.ONE);
+        FoodOrder order = OrderFactory.create(
+                client, restaurant, requestedItems, pricingService.currentMultiplier());
         return orderRepository.save(order);
     }
 
