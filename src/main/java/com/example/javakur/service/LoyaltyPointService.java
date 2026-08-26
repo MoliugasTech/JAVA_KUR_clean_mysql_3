@@ -3,12 +3,10 @@ package com.example.javakur.service;
 import com.example.javakur.exception.ValidationException;
 import com.example.javakur.model.Client;
 import com.example.javakur.model.FoodOrder;
-import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-@Service
 public class LoyaltyPointService {
 
     public int awardFor(FoodOrder order) {
