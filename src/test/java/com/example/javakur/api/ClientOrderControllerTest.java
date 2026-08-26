@@ -52,7 +52,7 @@ class ClientOrderControllerTest {
                                  "items":[{"menuItemId":8,"quantity":2}]}
                                 """))
                 .andExpect(status().isCreated())
-                .andExpect(header().string("Location", "/api/client/orders/12"))
+                .andExpect(header().string("Location", "http://localhost/api/client/orders/12"))
                 .andExpect(jsonPath("$.id").value(12))
                 .andExpect(jsonPath("$.status").value("CREATED"))
                 .andExpect(jsonPath("$.restaurantId").value(4))
