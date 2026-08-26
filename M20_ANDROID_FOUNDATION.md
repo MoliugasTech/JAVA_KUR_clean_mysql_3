@@ -59,4 +59,4 @@ cd android-app
 ./gradlew testDebugUnitTest
 ```
 
-Naudojamas AGP 9.3, Gradle 9.5, API 36 ir Compose BOM `2026.08.00`.
+Naudojamas AGP 9.3, Gradle 9.5, API 36 ir Compose BOM `2026.05.00`.
