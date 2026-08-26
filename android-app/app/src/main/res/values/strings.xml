@@ -26,7 +26,7 @@
     <string name="client_space">Kliento erdvė</string>
     <string name="driver_space">Vairuotojo erdvė</string>
     <string name="client_home_description">Peržiūrėkite restoranus, pateikite ir sekite savo užsakymus.</string>
-    <string name="driver_home_description">Laisvų pristatymų ir mano užsakymų ekranai bus prijungti vėlesniame etape.</string>
+    <string name="driver_home_description">Peržiūrėkite laisvus pristatymus, pasiimkite užsakymą ir atnaujinkite jo būseną.</string>
     <string name="logout">Atsijungti</string>
     <string name="view_restaurants">Peržiūrėti restoranus</string>
     <string name="restaurants">Restoranai</string>
@@ -73,6 +73,24 @@
     <string name="conversation_read_only">Užbaigto užsakymo žinutes galima tik skaityti</string>
     <string name="error_empty_message">Įrašykite žinutę</string>
     <string name="error_message_failed">Nepavyko išsiųsti žinutės</string>
+
+    <string name="available_deliveries">Laisvi pristatymai</string>
+    <string name="my_deliveries">Mano pristatymai</string>
+    <string name="no_available_deliveries">Šiuo metu nėra laisvų pristatymų</string>
+    <string name="no_driver_orders">Dar neturite pristatymų</string>
+    <string name="error_driver_orders_failed">Nepavyko gauti pristatymų</string>
+    <string name="accept_delivery">Pasiimti pristatymą</string>
+    <string name="accept_delivery_confirmation">Restoranas: %1$s\nPristatyti į: %2$s\n\nAr tikrai norite pasiimti šį užsakymą?</string>
+    <string name="accept">Pasiimti</string>
+    <string name="cancel">Atšaukti</string>
+    <string name="delivery_accepted">Pristatymas priskirtas jums</string>
+    <string name="error_accept_delivery">Užsakymo pasiimti nepavyko. Galbūt jį jau paėmė kitas vairuotojas.</string>
+    <string name="error_driver_order_details_failed">Nepavyko gauti pristatymo duomenų</string>
+    <string name="driver_order_detail_summary">Restoranas: %1$s\nPaimti iš: %2$s\nKlientas: %3$s\nPristatyti į: %4$s\nBūsena: %5$s\nSuma: %6$s €</string>
+    <string name="start_delivery">Pradėti pristatymą</string>
+    <string name="complete_delivery">Pažymėti pristatytu</string>
+    <string name="order_status_updated">Užsakymo būsena atnaujinta</string>
+    <string name="error_status_update">Nepavyko pakeisti užsakymo būsenos</string>
 
     <string-array name="vehicle_types">
         <item>CAR</item>

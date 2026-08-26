@@ -8,6 +8,10 @@ public final class Constants {
     public static final String DRIVERS_URL = HOME_URL + "api/drivers";
     public static final String RESTAURANTS_URL = HOME_URL + "api/catalog/restaurants";
     public static final String CLIENT_ORDERS_URL = HOME_URL + "api/client/orders";
+    public static final String DRIVER_ORDERS_BASE_URL = HOME_URL + "api/driver/orders";
+    public static final String DRIVER_AVAILABLE_ORDERS_URL =
+            DRIVER_ORDERS_BASE_URL + "/available";
+    public static final String DRIVER_ORDERS_URL = DRIVER_ORDERS_BASE_URL + "/mine";
 
     private Constants() {}
 
@@ -21,5 +25,21 @@ public final class Constants {
 
     public static String messagesUrl(long orderId) {
         return orderUrl(orderId) + "/messages";
+    }
+
+    public static String driverOrderUrl(long orderId) {
+        return DRIVER_ORDERS_BASE_URL + "/" + orderId;
+    }
+
+    public static String driverAcceptUrl(long orderId) {
+        return driverOrderUrl(orderId) + "/accept";
+    }
+
+    public static String driverStatusUrl(long orderId) {
+        return driverOrderUrl(orderId) + "/status";
+    }
+
+    public static String driverMessagesUrl(long orderId) {
+        return driverOrderUrl(orderId) + "/messages";
     }
 }
