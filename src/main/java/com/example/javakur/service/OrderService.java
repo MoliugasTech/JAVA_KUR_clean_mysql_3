@@ -34,36 +34,8 @@ public class OrderService {
     public FoodOrder createOrder(Client client, Restaurant restaurant,
                                  Map<MenuItem, Integer> requestedItems,
                                  BigDecimal priceMultiplier) {
-        validateParticipants(client, restaurant);
-        validateMultiplier(priceMultiplier);
-
-        if (requestedItems == null || requestedItems.isEmpty()) {
-            throw new ValidationException("Užsakyme turi būti bent vienas patiekalas");
-        }
-
-        FoodOrder order = new FoodOrder(client, restaurant);
-        BigDecimal subtotal = BigDecimal.ZERO;
-
-        for (Map.Entry<MenuItem, Integer> entry : new LinkedHashMap<>(requestedItems).entrySet()) {
-            MenuItem menuItem = entry.getKey();
-            Integer quantity = entry.getValue();
-            validateOrderItem(menuItem, quantity, restaurant);
-
-            BigDecimal priceAtPurchase = menuItem.getPrice().setScale(MONEY_SCALE, RoundingMode.HALF_UP);
-            order.addItem(new OrderItem(menuItem, quantity, priceAtPurchase));
-            subtotal = subtotal.add(priceAtPurchase.multiply(BigDecimal.valueOf(quantity)));
-        }
-
-        subtotal = subtotal.setScale(MONEY_SCALE, RoundingMode.HALF_UP);
-        BigDecimal normalizedMultiplier = priceMultiplier.setScale(3, RoundingMode.HALF_UP);
-        BigDecimal totalPrice = subtotal.multiply(normalizedMultiplier)
-                .setScale(MONEY_SCALE, RoundingMode.HALF_UP);
-
-        order.setSubtotal(subtotal);
-        order.setPriceMultiplier(normalizedMultiplier);
-        order.setTotalPrice(totalPrice);
-
-        return orderRepository.save(order);
+        return orderRepository.save(
+                OrderFactory.create(client, restaurant, requestedItems, priceMultiplier));
     }
 
     public Optional<FoodOrder> findDetailedById(Long id) {
