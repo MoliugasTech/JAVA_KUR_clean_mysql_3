@@ -35,11 +35,14 @@ export JAVA_HOME=$(/usr/libexec/java_home -v 21)
 mvn spring-boot:run
 ```
 
-Android emuliatorius Mac kompiuterį pasiekia adresu `10.0.2.2`, todėl debug
-konfigūracijoje naudojamas `http://10.0.2.2:8080/`.
+Prijungus Android telefoną USB laidu, backend'o portas perduodamas į telefoną:
 
-Naudojant fizinį telefoną reikės pakeisti `API_BASE_URL` į Mac kompiuterio
-lokalaus tinklo IP adresą ir leisti ryšį macOS ugniasienėje.
+```bash
+~/Library/Android/sdk/platform-tools/adb reverse tcp:8080 tcp:8080
+```
+
+Todėl debug konfigūracijoje naudojamas `http://127.0.0.1:8080/`, o lokalaus
+tinklo IP adreso ir macOS ugniasienės keisti nereikia.
 
 ## Patikrinimas
 
