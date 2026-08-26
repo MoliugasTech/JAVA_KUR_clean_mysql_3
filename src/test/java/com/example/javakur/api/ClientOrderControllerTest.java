@@ -3,6 +3,7 @@ package com.example.javakur.api;
 import com.example.javakur.model.Client;
 import com.example.javakur.model.Driver;
 import com.example.javakur.model.FoodOrder;
+import com.example.javakur.model.OrderStatus;
 import com.example.javakur.model.Restaurant;
 import com.example.javakur.model.RestaurantOwner;
 import com.example.javakur.model.RestaurantType;
@@ -16,11 +17,14 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -30,14 +34,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @Import({ApiSecurityConfig.class, ApiTokenAuthenticationFilter.class,
         ApiTokenService.class, ApiSecurityErrorWriter.class})
 class ClientOrderControllerTest {
-    @Autowired
-    private MockMvc mockMvc;
-
-    @Autowired
-    private ApiTokenService tokenService;
-
-    @MockBean
-    private ClientOrderRestService service;
+    @Autowired private MockMvc mockMvc;
+    @Autowired private ApiTokenService tokenService;
+    @MockBean private ClientOrderRestService service;
 
     @Test
     void clientCanCreateOrder() throws Exception {
@@ -53,44 +52,64 @@ class ClientOrderControllerTest {
                                 """))
                 .andExpect(status().isCreated())
                 .andExpect(header().string("Location", "http://localhost/api/client/orders/12"))
-                .andExpect(jsonPath("$.id").value(12))
-                .andExpect(jsonPath("$.status").value("CREATED"))
-                .andExpect(jsonPath("$.restaurantId").value(4))
-                .andExpect(jsonPath("$.subtotal").value(9.00))
-                .andExpect(jsonPath("$.totalPrice").value(9.00));
+                .andExpect(jsonPath("$.id").value(12));
+    }
+
+    @Test
+    void clientCanListOnlyOwnOrders() throws Exception {
+        when(service.list(7L)).thenReturn(List.of(new ClientOrderDtos.OrderSummaryResponse(
+                12L, OrderStatus.CREATED, 4L, "Skanu", null, null,
+                LocalDateTime.of(2026, 8, 26, 18, 0), new BigDecimal("9.00"))));
+
+        mockMvc.perform(get("/api/client/orders")
+                        .header("Authorization", bearer(client(7L))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].id").value(12))
+                .andExpect(jsonPath("$[0].restaurantName").value("Skanu"));
+    }
+
+    @Test
+    void clientCanReadAndSendMessages() throws Exception {
+        when(service.messages(7L, 12L)).thenReturn(List.of(new ClientOrderDtos.MessageResponse(
+                2L, 7L, "C Client", "CLIENT", "Kurjeris jau važiuoja?",
+                LocalDateTime.of(2026, 8, 26, 18, 10))));
+        when(service.sendMessage(7L, 12L, "Ačiū"))
+                .thenReturn(new ClientOrderDtos.MessageResponse(
+                        3L, 7L, "C Client", "CLIENT", "Ačiū",
+                        LocalDateTime.of(2026, 8, 26, 18, 11)));
+
+        mockMvc.perform(get("/api/client/orders/12/messages")
+                        .header("Authorization", bearer(client(7L))))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$[0].content").value("Kurjeris jau važiuoja?"));
+
+        mockMvc.perform(post("/api/client/orders/12/messages")
+                        .header("Authorization", bearer(client(7L)))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"content\":\"Ačiū\"}"))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.id").value(3))
+                .andExpect(jsonPath("$.content").value("Ačiū"));
     }
 
     @Test
     void requestWithoutTokenIsRejected() throws Exception {
-        mockMvc.perform(post("/api/client/orders")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {"restaurantId":4,
-                                 "items":[{"menuItemId":8,"quantity":2}]}
-                                """))
-                .andExpect(status().isUnauthorized());
+        mockMvc.perform(get("/api/client/orders")).andExpect(status().isUnauthorized());
     }
 
     @Test
-    void driverCannotCreateClientOrder() throws Exception {
-        mockMvc.perform(post("/api/client/orders")
-                        .header("Authorization", bearer(driver(9L)))
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {"restaurantId":4,
-                                 "items":[{"menuItemId":8,"quantity":2}]}
-                                """))
+    void driverCannotUseClientOrders() throws Exception {
+        mockMvc.perform(get("/api/client/orders")
+                        .header("Authorization", bearer(driver(9L))))
                 .andExpect(status().isForbidden());
     }
 
     @Test
-    void emptyCartIsRejectedBeforeCallingService() throws Exception {
-        mockMvc.perform(post("/api/client/orders")
+    void emptyMessageIsRejectedBeforeCallingService() throws Exception {
+        mockMvc.perform(post("/api/client/orders/12/messages")
                         .header("Authorization", bearer(client(7L)))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("""
-                                {"restaurantId":4,"items":[]}
-                                """))
+                        .content("{\"content\":\"  \"}"))
                 .andExpect(status().isBadRequest());
     }
 

@@ -13,11 +13,16 @@ public class ClientHomeActivity extends BaseHomeActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Button button = findViewById(R.id.restaurantsButton);
+        configureButton(R.id.restaurantsButton, ClientRestaurantsActivity.class);
+        configureButton(R.id.ordersButton, ClientOrdersActivity.class);
+    }
+
+    private void configureButton(int buttonId, Class<?> activityClass) {
+        Button button = findViewById(buttonId);
         if (button != null) {
             button.setVisibility(View.VISIBLE);
             button.setOnClickListener(view ->
-                    startActivity(new Intent(this, ClientRestaurantsActivity.class)));
+                    startActivity(new Intent(this, activityClass)));
         }
     }
 }

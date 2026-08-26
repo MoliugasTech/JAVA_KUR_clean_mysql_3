@@ -14,4 +14,12 @@ public final class Constants {
     public static String menuUrl(long restaurantId) {
         return RESTAURANTS_URL + "/" + restaurantId + "/menu-items";
     }
+
+    public static String orderUrl(long orderId) {
+        return CLIENT_ORDERS_URL + "/" + orderId;
+    }
+
+    public static String messagesUrl(long orderId) {
+        return orderUrl(orderId) + "/messages";
+    }
 }

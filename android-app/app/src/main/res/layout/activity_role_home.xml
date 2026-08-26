@@ -68,6 +68,21 @@
     </com.google.android.material.card.MaterialCardView>
 
     <Button
+        android:id="@+id/ordersButton"
+        android:layout_width="0dp"
+        android:layout_height="52dp"
+        android:layout_marginBottom="12dp"
+        android:backgroundTint="@color/orange"
+        android:text="@string/my_orders"
+        android:textAllCaps="false"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:visibility="gone"
+        app:layout_constraintBottom_toTopOf="@id/restaurantsButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Button
         android:id="@+id/restaurantsButton"
         android:layout_width="0dp"
         android:layout_height="52dp"

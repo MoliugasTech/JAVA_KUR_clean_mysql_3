@@ -25,7 +25,7 @@
     <string name="greeting">Sveiki, %1$s</string>
     <string name="client_space">Kliento erdvė</string>
     <string name="driver_space">Vairuotojo erdvė</string>
-    <string name="client_home_description">Peržiūrėkite restoranus, pasirinkite patiekalus ir pateikite užsakymą.</string>
+    <string name="client_home_description">Peržiūrėkite restoranus, pateikite ir sekite savo užsakymus.</string>
     <string name="driver_home_description">Laisvų pristatymų ir mano užsakymų ekranai bus prijungti vėlesniame etape.</string>
     <string name="logout">Atsijungti</string>
     <string name="view_restaurants">Peržiūrėti restoranus</string>
@@ -56,6 +56,23 @@
     <string name="order_created">Užsakymas #%1$d sukurtas. Suma: %2$s €</string>
     <string name="error_empty_cart">Pasirinkite bent vieną patiekalą</string>
     <string name="error_order_failed">Nepavyko sukurti užsakymo</string>
+
+    <string name="my_orders">Mano užsakymai</string>
+    <string name="no_orders">Dar neturite užsakymų</string>
+    <string name="error_orders_failed">Nepavyko gauti užsakymų</string>
+    <string name="error_order_details_failed">Nepavyko gauti užsakymo duomenų</string>
+    <string name="order_number">Užsakymas #%1$d</string>
+    <string name="order_detail_summary">Restoranas: %1$s\nBūsena: %2$s\nSukurtas: %3$s\nVairuotojas: %4$s\nSuma: %5$s €</string>
+    <string name="driver_not_assigned">Dar nepriskirtas</string>
+    <string name="order_items">Patiekalai</string>
+    <string name="conversation">Susirašinėjimas</string>
+    <string name="no_messages">Žinučių dar nėra</string>
+    <string name="message_hint">Rašykite žinutę</string>
+    <string name="send">Siųsti</string>
+    <string name="message_sent">Žinutė išsiųsta</string>
+    <string name="conversation_read_only">Užbaigto užsakymo žinutes galima tik skaityti</string>
+    <string name="error_empty_message">Įrašykite žinutę</string>
+    <string name="error_message_failed">Nepavyko išsiųsti žinutės</string>
 
     <string-array name="vehicle_types">
         <item>CAR</item>
