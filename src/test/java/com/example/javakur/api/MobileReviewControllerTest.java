@@ -41,14 +41,14 @@ class MobileReviewControllerTest {
         mockMvc.perform(post("/api/client/orders/12/reviews/restaurant")
                         .header("Authorization", bearer(client(7L)))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{"rating":5,"comment":"Puiku"}"))
+                        .content("{\"rating\":5,\"comment\":\"Puiku\"}"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.type").value("RESTAURANT"));
 
         mockMvc.perform(post("/api/client/orders/12/reviews/driver")
                         .header("Authorization", bearer(client(7L)))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{"rating":4,"comment":"Greitai"}"))
+                        .content("{\"rating\":4,\"comment\":\"Greitai\"}"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.type").value("DRIVER"));
     }
@@ -61,7 +61,7 @@ class MobileReviewControllerTest {
         mockMvc.perform(post("/api/driver/orders/12/reviews/client")
                         .header("Authorization", bearer(driver(9L)))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{"rating":5,"comment":"Viskas gerai"}"))
+                        .content("{\"rating\":5,\"comment\":\"Viskas gerai\"}"))
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.type").value("CLIENT"));
     }
@@ -71,7 +71,7 @@ class MobileReviewControllerTest {
         mockMvc.perform(post("/api/client/orders/12/reviews/restaurant")
                         .header("Authorization", bearer(client(7L)))
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{"rating":6,"comment":"Blogas balas"}"))
+                        .content("{\"rating\":6,\"comment\":\"Blogas balas\"}"))
                 .andExpect(status().isBadRequest());
     }
 
