@@ -25,7 +25,7 @@
     <string name="greeting">Sveiki, %1$s</string>
     <string name="client_space">Kliento erdvė</string>
     <string name="driver_space">Vairuotojo erdvė</string>
-    <string name="client_home_description">Restoranų, krepšelio ir užsakymų ekranai bus prijungti M21 etape.</string>
+    <string name="client_home_description">Peržiūrėkite restoranus, pasirinkite patiekalus ir pateikite užsakymą.</string>
     <string name="driver_home_description">Laisvų pristatymų ir mano užsakymų ekranai bus prijungti vėlesniame etape.</string>
     <string name="logout">Atsijungti</string>
     <string name="view_restaurants">Peržiūrėti restoranus</string>
