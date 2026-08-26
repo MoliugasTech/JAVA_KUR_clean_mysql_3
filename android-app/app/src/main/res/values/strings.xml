@@ -46,6 +46,17 @@
     <string name="error_delivery_address_required">Įveskite pristatymo adresą</string>
     <string name="error_registration_failed">Registracija nepavyko</string>
 
+    <string name="no_description">Aprašymo nėra</string>
+    <string name="menu_item_price">%1$s €</string>
+    <string name="minus">−</string>
+    <string name="plus">+</string>
+    <string name="cart_empty">Krepšelis tuščias</string>
+    <string name="cart_summary">Krepšelis: %1$d vnt. · %2$s €</string>
+    <string name="place_order">Užsakyti</string>
+    <string name="order_created">Užsakymas #%1$d sukurtas. Suma: %2$s €</string>
+    <string name="error_empty_cart">Pasirinkite bent vieną patiekalą</string>
+    <string name="error_order_failed">Nepavyko sukurti užsakymo</string>
+
     <string-array name="vehicle_types">
         <item>CAR</item>
         <item>MOTORCYCLE</item>
