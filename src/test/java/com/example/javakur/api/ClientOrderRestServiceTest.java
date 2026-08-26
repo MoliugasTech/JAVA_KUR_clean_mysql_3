@@ -9,6 +9,7 @@ import com.example.javakur.model.OrderStatus;
 import com.example.javakur.model.Restaurant;
 import com.example.javakur.model.RestaurantOwner;
 import com.example.javakur.model.RestaurantType;
+import com.example.javakur.service.TimeBasedPricingService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -36,16 +37,18 @@ class ClientOrderRestServiceTest {
     @Mock private CatalogMenuItemRepository menuItemRepository;
     @Mock private ClientOrderRepository orderRepository;
     @Mock private ClientOrderMessageRepository messageRepository;
+    @Mock private TimeBasedPricingService pricingService;
     @InjectMocks private ClientOrderRestService service;
 
     @Test
-    void createsAndPersistsOrderForAuthenticatedClient() {
+    void createsAndPersistsOrderForAuthenticatedClientUsingCurrentTimePrice() {
         Client client = client(7L);
         Restaurant restaurant = restaurant(4L);
         MenuItem item = menuItem(8L, restaurant);
         when(userRepository.findActiveClientById(7L)).thenReturn(Optional.of(client));
         when(restaurantRepository.findById(4L)).thenReturn(Optional.of(restaurant));
         when(menuItemRepository.findById(8L)).thenReturn(Optional.of(item));
+        when(pricingService.currentMultiplier()).thenReturn(new BigDecimal("1.200"));
         when(orderRepository.save(any(FoodOrder.class))).thenAnswer(invocation -> {
             FoodOrder order = invocation.getArgument(0);
             order.setId(12L);
@@ -56,7 +59,9 @@ class ClientOrderRestServiceTest {
                 new CreateOrderRequest(4L, List.of(new OrderItemRequest(8L, 2))));
 
         assertEquals(12L, order.getId());
-        assertEquals(new BigDecimal("9.00"), order.getTotalPrice());
+        assertEquals(new BigDecimal("1.200"), order.getPriceMultiplier());
+        assertEquals(new BigDecimal("10.80"), order.getTotalPrice());
+        verify(pricingService).currentMultiplier();
         verify(orderRepository).save(order);
     }
 
