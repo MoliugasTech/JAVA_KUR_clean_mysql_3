@@ -9,6 +9,7 @@ import com.example.javakur.model.Restaurant;
 import com.example.javakur.model.RestaurantOwner;
 import com.example.javakur.model.RestaurantType;
 import com.example.javakur.model.VehicleType;
+import com.example.javakur.service.LoyaltyPointService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -23,6 +24,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -31,6 +33,7 @@ class DriverOrderRestServiceTest {
     @Mock private MobileUserRepository userRepository;
     @Mock private DriverOrderRepository orderRepository;
     @Mock private ClientOrderMessageRepository messageRepository;
+    @Mock private LoyaltyPointService loyaltyPointService;
     @InjectMocks private DriverOrderRestService service;
 
     @Test
@@ -74,7 +77,7 @@ class DriverOrderRestServiceTest {
     }
 
     @Test
-    void driverFollowsDeliveryStatusSequence() {
+    void driverFollowsDeliveryStatusSequenceAndAwardsPointsOnlyOnCompletion() {
         Driver driver = driver(9L);
         FoodOrder order = order(12L, OrderStatus.PICKED_UP);
         order.setDriver(driver);
@@ -84,9 +87,11 @@ class DriverOrderRestServiceTest {
 
         var delivering = service.changeStatus(9L, 12L, OrderStatus.DELIVERING);
         assertEquals(OrderStatus.DELIVERING, delivering.status());
+        verify(loyaltyPointService, never()).awardFor(order);
 
         var completed = service.changeStatus(9L, 12L, OrderStatus.COMPLETED);
         assertEquals(OrderStatus.COMPLETED, completed.status());
+        verify(loyaltyPointService).awardFor(order);
     }
 
     @Test
