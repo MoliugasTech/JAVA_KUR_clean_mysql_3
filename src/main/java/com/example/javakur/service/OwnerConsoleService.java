@@ -3,11 +3,13 @@ package com.example.javakur.service;
 import com.example.javakur.exception.ValidationException;
 import com.example.javakur.model.FoodOrder;
 import com.example.javakur.model.MenuItem;
+import com.example.javakur.model.OrderMessage;
 import com.example.javakur.model.OrderStatus;
 import com.example.javakur.model.Restaurant;
 import com.example.javakur.model.RestaurantOwner;
 import com.example.javakur.model.RestaurantType;
 import com.example.javakur.model.User;
+import com.example.javakur.repository.OrderMessageRepository;
 import com.example.javakur.repository.OrderRepository;
 import com.example.javakur.repository.RestaurantRepository;
 
@@ -29,17 +31,29 @@ public class OwnerConsoleService {
     private final OrderService orderService;
     private final RestaurantRepository restaurantRepository;
     private final OrderRepository orderRepository;
+    private final OrderMessageService messageService;
 
     public OwnerConsoleService(UserService userService, RestaurantService restaurantService,
                                MenuService menuService, OrderService orderService,
                                RestaurantRepository restaurantRepository,
                                OrderRepository orderRepository) {
+        this(userService, restaurantService, menuService, orderService,
+                restaurantRepository, orderRepository,
+                new OrderMessageService(new OrderMessageRepository()));
+    }
+
+    public OwnerConsoleService(UserService userService, RestaurantService restaurantService,
+                               MenuService menuService, OrderService orderService,
+                               RestaurantRepository restaurantRepository,
+                               OrderRepository orderRepository,
+                               OrderMessageService messageService) {
         this.userService = userService;
         this.restaurantService = restaurantService;
         this.menuService = menuService;
         this.orderService = orderService;
         this.restaurantRepository = restaurantRepository;
         this.orderRepository = orderRepository;
+        this.messageService = messageService;
     }
 
     public RestaurantOwner register(String username, String password, String name,
@@ -128,6 +142,16 @@ public class OwnerConsoleService {
 
     public FoodOrder getOrder(Long ownerId, Long orderId) {
         return requireOwnedOrder(ownerId, orderId);
+    }
+
+    public List<OrderMessage> listMessages(Long ownerId, Long orderId) {
+        FoodOrder order = requireOwnedOrder(ownerId, orderId);
+        return messageService.getConversation(order, requireOwner(ownerId));
+    }
+
+    public OrderMessage sendMessage(Long ownerId, Long orderId, String content) {
+        FoodOrder order = requireOwnedOrder(ownerId, orderId);
+        return messageService.sendMessage(order, requireOwner(ownerId), content);
     }
 
     public FoodOrder changeOrderStatus(Long ownerId, Long orderId, OrderStatus newStatus) {

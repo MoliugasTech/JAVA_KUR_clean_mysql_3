@@ -55,7 +55,8 @@
                     <Label text="Užsakymo detalės" styleClass="section-title"/>
                     <Label fx:id="orderInfoLabel" text="Pasirinkite užsakymą." wrapText="true"/>
                     <Label fx:id="cancellationReasonLabel" wrapText="true" styleClass="error"/>
-                    <TableView fx:id="itemsTable" VBox.vgrow="ALWAYS">
+                    <Label text="Patiekalai" styleClass="field-label"/>
+                    <TableView fx:id="itemsTable" prefHeight="150">
                         <columns>
                             <TableColumn fx:id="itemNameColumn" text="Patiekalas" prefWidth="210"/>
                             <TableColumn fx:id="itemQuantityColumn" text="Kiekis" prefWidth="70"/>
@@ -63,6 +64,20 @@
                             <TableColumn fx:id="itemTotalColumn" text="Suma" prefWidth="80"/>
                         </columns>
                     </TableView>
+                    <Label text="Pokalbis" styleClass="field-label"/>
+                    <TableView fx:id="messagesTable" prefHeight="150" VBox.vgrow="ALWAYS">
+                        <columns>
+                            <TableColumn fx:id="messageSenderColumn" text="Siuntėjas" prefWidth="105"/>
+                            <TableColumn fx:id="messageTimeColumn" text="Laikas" prefWidth="130"/>
+                            <TableColumn fx:id="messageContentColumn" text="Žinutė" prefWidth="280"/>
+                        </columns>
+                    </TableView>
+                    <HBox spacing="8">
+                        <TextField fx:id="messageField" HBox.hgrow="ALWAYS"
+                                   promptText="Žinutė klientui arba vairuotojui"/>
+                        <Button fx:id="sendMessageButton" text="Siųsti"
+                                onAction="#handleSendMessage"/>
+                    </HBox>
                     <HBox spacing="8">
                         <Button fx:id="acceptButton" text="Priimti" onAction="#handleAccept"/>
                         <Button fx:id="prepareButton" text="Pradėti ruošti"

@@ -9,6 +9,7 @@ import com.example.javakur.repository.UserRepository;
 import com.example.javakur.service.AdminConsoleService;
 import com.example.javakur.service.AuthenticationService;
 import com.example.javakur.service.MenuService;
+import com.example.javakur.service.OrderMessageService;
 import com.example.javakur.service.OrderService;
 import com.example.javakur.service.OwnerConsoleService;
 import com.example.javakur.service.RestaurantService;
@@ -31,7 +32,8 @@ public final class GuiContext {
     private static final OwnerConsoleService OWNER_SERVICE = new OwnerConsoleService(
             USER_SERVICE, new RestaurantService(RESTAURANT_REPOSITORY),
             new MenuService(MENU_ITEM_REPOSITORY), new OrderService(ORDER_REPOSITORY),
-            RESTAURANT_REPOSITORY, ORDER_REPOSITORY);
+            RESTAURANT_REPOSITORY, ORDER_REPOSITORY,
+            new OrderMessageService(MESSAGE_REPOSITORY));
 
     private GuiContext() {
     }

@@ -4,6 +4,7 @@ import com.example.javakur.gui.GuiContext;
 import com.example.javakur.gui.GuiSession;
 import com.example.javakur.model.FoodOrder;
 import com.example.javakur.model.OrderItem;
+import com.example.javakur.model.OrderMessage;
 import com.example.javakur.model.OrderStatus;
 import com.example.javakur.model.Restaurant;
 import com.example.javakur.service.OwnerConsoleService;
@@ -54,6 +55,12 @@ public class OwnerOrdersFormController {
     @FXML private TableColumn<OrderItem, Integer> itemQuantityColumn;
     @FXML private TableColumn<OrderItem, BigDecimal> itemPriceColumn;
     @FXML private TableColumn<OrderItem, BigDecimal> itemTotalColumn;
+    @FXML private TableView<OrderMessage> messagesTable;
+    @FXML private TableColumn<OrderMessage, String> messageSenderColumn;
+    @FXML private TableColumn<OrderMessage, String> messageTimeColumn;
+    @FXML private TableColumn<OrderMessage, String> messageContentColumn;
+    @FXML private TextField messageField;
+    @FXML private Button sendMessageButton;
     @FXML private Label orderInfoLabel;
     @FXML private Label cancellationReasonLabel;
     @FXML private Label statusLabel;
@@ -108,6 +115,13 @@ public class OwnerOrdersFormController {
         itemTotalColumn.setCellValueFactory(data -> new ReadOnlyObjectWrapper<>(
                 data.getValue().getPriceAtPurchase().multiply(
                         BigDecimal.valueOf(data.getValue().getQuantity()))));
+        messageSenderColumn.setCellValueFactory(data -> new ReadOnlyStringWrapper(
+                data.getValue().getSender().getUsername()));
+        messageTimeColumn.setCellValueFactory(data -> new ReadOnlyStringWrapper(
+                data.getValue().getSentAt() == null ? ""
+                        : DATE_TIME.format(data.getValue().getSentAt())));
+        messageContentColumn.setCellValueFactory(data ->
+                new ReadOnlyStringWrapper(data.getValue().getContent()));
     }
 
     protected void refreshRestaurants() {
@@ -222,6 +236,31 @@ public class OwnerOrdersFormController {
     }
 
     @FXML
+    private void handleSendMessage() {
+        if (currentOrder == null) {
+            showStatus("Pasirinkite užsakymą.");
+            return;
+        }
+        try {
+            ownerService.sendMessage(ownerId(), currentOrder.getId(), messageField.getText());
+            messageField.clear();
+            refreshMessages();
+            showStatus("Žinutė išsiųsta.");
+        } catch (RuntimeException exception) {
+            showError(exception);
+        }
+    }
+
+    private void refreshMessages() {
+        if (currentOrder == null) {
+            messagesTable.getItems().clear();
+            return;
+        }
+        messagesTable.getItems().setAll(
+                ownerService.listMessages(ownerId(), currentOrder.getId()));
+    }
+
+    @FXML
     private void handleToggleDriver() {
         FoodOrder order = requireCurrentOrder();
         boolean allowed = !order.isDriverAssignmentAllowed();
@@ -265,6 +304,7 @@ public class OwnerOrdersFormController {
             String reason = currentOrder.getCancellationReason();
             cancellationReasonLabel.setText(reason == null || reason.isBlank()
                     ? "" : "Atmetimo priežastis: " + reason);
+            refreshMessages();
             updateActions();
         } catch (RuntimeException exception) {
             showError(exception);
@@ -274,6 +314,8 @@ public class OwnerOrdersFormController {
     private void clearDetail() {
         currentOrder = null;
         itemsTable.getItems().clear();
+        messagesTable.getItems().clear();
+        messageField.clear();
         orderInfoLabel.setText("Pasirinkite užsakymą.");
         cancellationReasonLabel.setText("");
         updateActions();
@@ -295,6 +337,14 @@ public class OwnerOrdersFormController {
         toggleDriverButton.setDisable(!driverPolicyAllowed);
         toggleDriverButton.setText(hasOrder && currentOrder.isDriverAssignmentAllowed()
                 ? "Blokuoti vairuotojo paėmimą" : "Leisti vairuotojo paėmimą");
+        boolean messagingAllowed = hasOrder
+                && status != OrderStatus.COMPLETED
+                && status != OrderStatus.CANCELLED;
+        messageField.setDisable(!messagingAllowed);
+        sendMessageButton.setDisable(!messagingAllowed);
+        messageField.setPromptText(messagingAllowed
+                ? "Žinutė klientui arba vairuotojui"
+                : "Baigto užsakymo pokalbis tik skaitomas");
     }
 
     private FoodOrder requireCurrentOrder() {
