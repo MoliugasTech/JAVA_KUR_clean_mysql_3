@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import java.util.HashSet;
 import java.util.List;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -35,7 +36,16 @@ class FinalAcceptanceTest {
     }
 
     @Test
-    void orderLifecycleDefinesSuccessfulAndCancelledTerminalStates() {
+    void courseworkContainsExactlyFourRequiredRoles() {
+        assertEquals(4, UserRole.values().length);
+        assertTrue(List.of(UserRole.values()).containsAll(List.of(
+                UserRole.CLIENT, UserRole.RESTAURANT_OWNER,
+                UserRole.DRIVER, UserRole.ADMIN)));
+    }
+
+    @Test
+    void orderLifecycleDefinesAtLeastFiveStatusesAndBothTerminalStates() {
+        assertTrue(OrderStatus.values().length >= 5);
         assertTrue(OrderStatus.COMPLETED != OrderStatus.CANCELLED);
         assertTrue(List.of(OrderStatus.values()).contains(OrderStatus.READY_FOR_PICKUP));
         assertTrue(List.of(OrderStatus.values()).contains(OrderStatus.DELIVERING));

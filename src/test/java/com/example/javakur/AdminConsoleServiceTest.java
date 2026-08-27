@@ -4,9 +4,12 @@ import com.example.javakur.exception.ValidationException;
 import com.example.javakur.model.Admin;
 import com.example.javakur.model.Client;
 import com.example.javakur.model.FoodOrder;
+import com.example.javakur.model.OrderMessage;
 import com.example.javakur.model.Restaurant;
 import com.example.javakur.model.Review;
 import com.example.javakur.model.User;
+import com.example.javakur.repository.MenuItemRepository;
+import com.example.javakur.repository.OrderMessageRepository;
 import com.example.javakur.repository.OrderRepository;
 import com.example.javakur.repository.RestaurantRepository;
 import com.example.javakur.repository.ReviewRepository;
@@ -27,8 +30,10 @@ class AdminConsoleServiceTest {
     private final FakeRestaurantRepository restaurants = new FakeRestaurantRepository();
     private final FakeOrderRepository orders = new FakeOrderRepository();
     private final FakeReviewRepository reviews = new FakeReviewRepository();
+    private final FakeMenuRepository menu = new FakeMenuRepository();
+    private final FakeMessageRepository messages = new FakeMessageRepository();
     private final AdminConsoleService service = new AdminConsoleService(
-            users, restaurants, orders, reviews);
+            users, restaurants, orders, reviews, menu, messages);
 
     private Admin admin;
     private Client client;
@@ -57,6 +62,33 @@ class AdminConsoleServiceTest {
     }
 
     @Test
+    void adminCanCorrectMessageContent() {
+        FoodOrder order = new FoodOrder();
+        order.setId(10L);
+        OrderMessage message = new OrderMessage(order, client, "Sena žinutė");
+        message.setId(20L);
+        messages.message = message;
+
+        OrderMessage updated = service.updateMessage(
+                admin.getId(), message.getId(), "  Pataisyta žinutė  ");
+
+        assertSame(message, updated);
+        org.junit.jupiter.api.Assertions.assertEquals(
+                "Pataisyta žinutė", updated.getContent());
+    }
+
+    @Test
+    void adminCannotSaveBlankMessage() {
+        FoodOrder order = new FoodOrder();
+        OrderMessage message = new OrderMessage(order, client, "Tekstas");
+        message.setId(20L);
+        messages.message = message;
+
+        assertThrows(ValidationException.class,
+                () -> service.updateMessage(admin.getId(), message.getId(), "  "));
+    }
+
+    @Test
     void nonAdminCannotUseAdministrationFunctions() {
         assertThrows(ValidationException.class, () -> service.listUsers(client.getId()));
         assertThrows(ValidationException.class, () -> service.listOrders(client.getId()));
@@ -82,6 +114,23 @@ class AdminConsoleServiceTest {
 
     private static class FakeRestaurantRepository extends RestaurantRepository {
         @Override public List<Restaurant> findAllWithOwner() { return List.of(); }
+    }
+
+    private static class FakeMenuRepository extends MenuItemRepository {
+    }
+
+    private static class FakeMessageRepository extends OrderMessageRepository {
+        private OrderMessage message;
+
+        @Override public Optional<OrderMessage> findById(Long id) {
+            return message != null && message.getId().equals(id)
+                    ? Optional.of(message) : Optional.empty();
+        }
+
+        @Override public OrderMessage update(OrderMessage value) {
+            message = value;
+            return value;
+        }
     }
 
     private static class FakeOrderRepository extends OrderRepository {

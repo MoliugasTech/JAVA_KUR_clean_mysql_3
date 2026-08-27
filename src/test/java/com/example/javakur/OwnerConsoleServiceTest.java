@@ -4,16 +4,19 @@ import com.example.javakur.exception.ValidationException;
 import com.example.javakur.model.FoodOrder;
 import com.example.javakur.model.MenuItem;
 import com.example.javakur.model.OrderItem;
+import com.example.javakur.model.OrderMessage;
 import com.example.javakur.model.OrderStatus;
 import com.example.javakur.model.Restaurant;
 import com.example.javakur.model.RestaurantOwner;
 import com.example.javakur.model.RestaurantType;
 import com.example.javakur.model.User;
 import com.example.javakur.repository.MenuItemRepository;
+import com.example.javakur.repository.OrderMessageRepository;
 import com.example.javakur.repository.OrderRepository;
 import com.example.javakur.repository.RestaurantRepository;
 import com.example.javakur.repository.UserRepository;
 import com.example.javakur.service.MenuService;
+import com.example.javakur.service.OrderMessageService;
 import com.example.javakur.service.OrderService;
 import com.example.javakur.service.OwnerConsoleService;
 import com.example.javakur.service.RestaurantService;
@@ -36,9 +39,11 @@ class OwnerConsoleServiceTest {
     private final FakeRestaurantRepository restaurants = new FakeRestaurantRepository();
     private final FakeMenuRepository menu = new FakeMenuRepository();
     private final FakeOrderRepository orders = new FakeOrderRepository();
+    private final FakeMessageRepository messages = new FakeMessageRepository();
     private final OwnerConsoleService service = new OwnerConsoleService(
             new UserService(users), new RestaurantService(restaurants),
-            new MenuService(menu), new OrderService(orders), restaurants, orders);
+            new MenuService(menu), new OrderService(orders), restaurants, orders,
+            new OrderMessageService(messages));
 
     private RestaurantOwner owner;
     private Restaurant restaurant;
@@ -147,6 +152,26 @@ class OwnerConsoleServiceTest {
     }
 
     @Test
+    void ownerCanWriteAndReadOrderConversationUntilTerminalState() {
+        FoodOrder order = new FoodOrder();
+        order.setId(4L);
+        order.setRestaurant(restaurant);
+        order.setStatus(OrderStatus.PREPARING);
+        orders.order = order;
+
+        OrderMessage sent = service.sendMessage(
+                owner.getId(), order.getId(), "  Užsakymas ruošiamas  ");
+
+        assertEquals("Užsakymas ruošiamas", sent.getContent());
+        assertEquals(1, service.listMessages(owner.getId(), order.getId()).size());
+
+        order.setStatus(OrderStatus.COMPLETED);
+        assertThrows(ValidationException.class,
+                () -> service.sendMessage(owner.getId(), order.getId(), "Dar viena"));
+        assertEquals(1, service.listMessages(owner.getId(), order.getId()).size());
+    }
+
+    @Test
     void rejectsAnotherOwnersRestaurant() {
         assertThrows(ValidationException.class,
                 () -> service.listMenu(99L, restaurant.getId()));
@@ -210,6 +235,27 @@ class OwnerConsoleServiceTest {
         @Override
         public MenuItem update(MenuItem item) {
             return item;
+        }
+    }
+
+    private static class FakeMessageRepository extends OrderMessageRepository {
+        private final List<OrderMessage> values = new ArrayList<>();
+
+        @Override
+        public boolean isOrderParticipant(Long orderId, Long userId) {
+            return true;
+        }
+
+        @Override
+        public OrderMessage save(OrderMessage message) {
+            message.setId((long) values.size() + 100);
+            values.add(message);
+            return message;
+        }
+
+        @Override
+        public List<OrderMessage> findByOrderId(Long orderId) {
+            return values;
         }
     }
 
