@@ -9,6 +9,9 @@ Baigtas Java kursinio darbo projektas su keturiomis rolėmis:
 Technologijos: Java 21, Maven, JavaFX/FXML, Spring Boot, Hibernate/JPA, MySQL,
 Android Java/XML, JUnit 5 ir Mockito.
 
+> Greitam kasdieniam paleidimui naudokite
+> [PALEIDIMO_INSTRUKCIJA.md](PALEIDIMO_INSTRUKCIJA.md).
+
 ## 1. Reikalavimai kompiuteriui
 
 - MySQL 8.x;
@@ -120,6 +123,7 @@ atkurti negali. Naudoti projekto demonstracijai sukurtas paskyras.
 
 ## 8. Galutiniai dokumentai
 
+- `PALEIDIMO_INSTRUKCIJA.md` – kasdienės paleidimo komandos ir klaidų sprendimai;
 - `COURSE_REQUIREMENTS_CHECKLIST.md` – reikalavimų atsekamumas;
 - `FINAL_DEMO_SCRIPT.md` – trumpas atsiskaitymo scenarijus;
 - `M30_FINAL_RELEASE.md` – galutinio etapo turinys.
