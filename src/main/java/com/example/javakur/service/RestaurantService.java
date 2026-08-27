@@ -29,6 +29,30 @@ public class RestaurantService {
                 openingTime, closingTime, owner));
     }
 
+    public Restaurant updateRestaurant(Restaurant restaurant, String name, String description,
+                                       String address, RestaurantType type,
+                                       LocalTime openingTime, LocalTime closingTime) {
+        if (restaurant == null || restaurant.getId() == null) {
+            throw new ValidationException("Išsaugotas restoranas yra privalomas");
+        }
+        if (name == null || name.isBlank()) {
+            throw new ValidationException("Restorano pavadinimas negali būti tuščias");
+        }
+        if (address == null || address.isBlank()) {
+            throw new ValidationException("Restorano adresas negali būti tuščias");
+        }
+        if (type == null || openingTime == null || closingTime == null) {
+            throw new ValidationException("Restorano tipas ir darbo laikas yra privalomi");
+        }
+        restaurant.setName(name.trim());
+        restaurant.setDescription(description == null ? "" : description.trim());
+        restaurant.setAddress(address.trim());
+        restaurant.setType(type);
+        restaurant.setOpeningTime(openingTime);
+        restaurant.setClosingTime(closingTime);
+        return restaurantRepository.update(restaurant);
+    }
+
     public List<Restaurant> findByOwner(RestaurantOwner owner) {
         return restaurantRepository.findByOwner(owner);
     }

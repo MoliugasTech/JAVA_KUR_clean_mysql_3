@@ -23,6 +23,24 @@ public class MenuService {
         return menuItemRepository.save(new MenuItem(name.trim(), description, price, restaurant));
     }
 
+    public MenuItem updateMenuItem(MenuItem item, String name, String description,
+                                   BigDecimal price, boolean available) {
+        if (item == null || item.getId() == null) {
+            throw new ValidationException("Išsaugotas meniu elementas yra privalomas");
+        }
+        if (name == null || name.isBlank()) {
+            throw new ValidationException("Patiekalo pavadinimas negali būti tuščias");
+        }
+        if (price == null || price.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new ValidationException("Kaina turi būti didesnė už nulį");
+        }
+        item.setName(name.trim());
+        item.setDescription(description == null ? "" : description.trim());
+        item.setPrice(price);
+        item.setAvailable(available);
+        return menuItemRepository.update(item);
+    }
+
     public MenuItem updatePrice(MenuItem item, BigDecimal newPrice) {
         if (item == null || item.getId() == null) throw new ValidationException("Išsaugotas meniu elementas yra privalomas");
         if (newPrice == null || newPrice.compareTo(BigDecimal.ZERO) <= 0) throw new ValidationException("Kaina turi būti didesnė už nulį");

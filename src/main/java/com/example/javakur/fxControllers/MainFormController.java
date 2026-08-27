@@ -17,6 +17,8 @@ public class MainFormController {
     private Button userManagementButton;
     @FXML
     private Button ownerOrdersButton;
+    @FXML
+    private Button ownerCatalogButton;
 
     @FXML
     private void initialize() {
@@ -29,11 +31,18 @@ public class MainFormController {
         userManagementButton.setManaged(admin);
         ownerOrdersButton.setVisible(owner);
         ownerOrdersButton.setManaged(owner);
+        ownerCatalogButton.setVisible(owner);
+        ownerCatalogButton.setManaged(owner);
     }
 
     @FXML
     private void handleUsers() {
         FoodDeliveryApplication.getInstance().showUserManagement();
+    }
+
+    @FXML
+    private void handleOwnerCatalog() {
+        FoodDeliveryApplication.getInstance().showOwnerCatalog();
     }
 
     @FXML

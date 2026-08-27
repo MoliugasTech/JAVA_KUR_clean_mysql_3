@@ -53,6 +53,14 @@ public class OwnerConsoleService {
                 openingTime, closingTime, requireOwner(ownerId));
     }
 
+    public Restaurant updateRestaurant(Long ownerId, Long restaurantId, String name,
+                                       String description, String address, RestaurantType type,
+                                       LocalTime openingTime, LocalTime closingTime) {
+        Restaurant restaurant = requireOwnedRestaurant(ownerId, restaurantId);
+        return restaurantService.updateRestaurant(restaurant, name, description, address,
+                type, openingTime, closingTime);
+    }
+
     public List<Restaurant> listRestaurants(Long ownerId) {
         return restaurantService.findByOwner(requireOwner(ownerId));
     }
@@ -79,6 +87,20 @@ public class OwnerConsoleService {
         if (newPrice != null) item = menuService.updatePrice(item, newPrice);
         if (available != null) item = menuService.updateAvailability(item, available);
         return item;
+    }
+
+    public MenuItem updateMenuItem(Long ownerId, Long restaurantId, Long itemId,
+                                   String name, String description, BigDecimal price,
+                                   boolean available) {
+        Restaurant restaurant = requireOwnedRestaurant(ownerId, restaurantId);
+        MenuItem item = requireOwnedMenuItem(restaurant, itemId);
+        return menuService.updateMenuItem(item, name, description, price, available);
+    }
+
+    public void deleteMenuItem(Long ownerId, Long restaurantId, Long itemId) {
+        Restaurant restaurant = requireOwnedRestaurant(ownerId, restaurantId);
+        requireOwnedMenuItem(restaurant, itemId);
+        menuService.deleteMenuItem(itemId);
     }
 
     public List<FoodOrder> listOrders(Long ownerId, Long restaurantId) {
@@ -139,6 +161,19 @@ public class OwnerConsoleService {
 
     private boolean contains(String value, String query) {
         return value != null && value.toLowerCase(Locale.ROOT).contains(query);
+    }
+
+    private MenuItem requireOwnedMenuItem(Restaurant restaurant, Long itemId) {
+        if (itemId == null) {
+            throw new ValidationException("Meniu elemento ID yra privalomas");
+        }
+        MenuItem item = menuService.findById(itemId)
+                .orElseThrow(() -> new ValidationException("Meniu elementas nerastas"));
+        if (item.getRestaurant() == null || item.getRestaurant().getId() == null
+                || !restaurant.getId().equals(item.getRestaurant().getId())) {
+            throw new ValidationException("Meniu elementas nepriklauso šiam restoranui");
+        }
+        return item;
     }
 
     private FoodOrder requireOwnedOrder(Long ownerId, Long orderId) {

@@ -88,6 +88,34 @@ public class FoodDeliveryApplication extends Application {
         }
     }
 
+    public void showOwnerCatalog() {
+        showDialog("Restoranų ir meniu valdymas", "/gui/owner-catalog-form.fxml",
+                1260, 800, 1080, 680);
+    }
+
+    private void showDialog(String title, String resource, double width, double height,
+                            double minWidth, double minHeight) {
+        try {
+            Stage dialog = new Stage();
+            dialog.setTitle(title);
+            dialog.initOwner(primaryStage);
+            dialog.initModality(Modality.WINDOW_MODAL);
+            Scene scene = new Scene(load(resource), width, height);
+            addStylesheet(scene);
+            dialog.setScene(scene);
+            dialog.setMinWidth(minWidth);
+            dialog.setMinHeight(minHeight);
+            dialog.showAndWait();
+        } catch (IOException exception) {
+            LOGGER.error("Nepavyko atidaryti formos {}", resource, exception);
+            Alert alert = new Alert(Alert.AlertType.ERROR);
+            alert.setTitle("Klaida");
+            alert.setHeaderText("Nepavyko atidaryti lango");
+            alert.setContentText("Išsamesnė informacija rodoma terminale.");
+            alert.showAndWait();
+        }
+    }
+
     private void setPrimaryScene(String resource, double width, double height) {
         try {
             Scene scene = new Scene(load(resource), width, height);
