@@ -16,6 +16,8 @@ public class MainFormController {
     @FXML
     private Button userManagementButton;
     @FXML
+    private Button adminSystemButton;
+    @FXML
     private Button ownerOrdersButton;
     @FXML
     private Button ownerCatalogButton;
@@ -29,6 +31,8 @@ public class MainFormController {
         boolean owner = session.role() == UserRole.RESTAURANT_OWNER;
         userManagementButton.setVisible(admin);
         userManagementButton.setManaged(admin);
+        adminSystemButton.setVisible(admin);
+        adminSystemButton.setManaged(admin);
         ownerOrdersButton.setVisible(owner);
         ownerOrdersButton.setManaged(owner);
         ownerCatalogButton.setVisible(owner);
@@ -38,6 +42,11 @@ public class MainFormController {
     @FXML
     private void handleUsers() {
         FoodDeliveryApplication.getInstance().showUserManagement();
+    }
+
+    @FXML
+    private void handleAdminSystem() {
+        FoodDeliveryApplication.getInstance().showAdminSystem();
     }
 
     @FXML

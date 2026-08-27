@@ -2,6 +2,7 @@ package com.example.javakur.gui;
 
 import com.example.javakur.model.UserRole;
 import com.example.javakur.security.UserSession;
+import com.example.javakur.fxControllers.AdminSystemFormController;
 import com.example.javakur.fxControllers.OwnerCatalogFormController;
 import com.example.javakur.fxControllers.OwnerOrdersFormController;
 import com.example.javakur.fxControllers.UserFormController;
@@ -54,6 +55,14 @@ class FxmlLoadingTest {
     }
 
     @Test
+    void adminSystemFormLoadsWithItsTableConfiguration() throws Exception {
+        GuiSession.set(new UserSession(1L, "admin", UserRole.ADMIN));
+        Parent root = loadAdminSystemFormOnJavaFxThread();
+        assertNotNull(root);
+        GuiSession.clear();
+    }
+
+    @Test
     void ownerCatalogFormLoadsWithItsTableConfiguration() throws Exception {
         GuiSession.set(new UserSession(2L, "owner", UserRole.RESTAURANT_OWNER));
         Parent root = loadOwnerCatalogFormOnJavaFxThread();
@@ -85,6 +94,35 @@ class FxmlLoadingTest {
         assertTrue(finished.await(5, TimeUnit.SECONDS));
         if (failure[0] != null) {
             throw new AssertionError("Nepavyko užkrauti " + resource, failure[0]);
+        }
+        return result[0];
+    }
+
+    private Parent loadAdminSystemFormOnJavaFxThread() throws Exception {
+        CountDownLatch finished = new CountDownLatch(1);
+        Parent[] result = new Parent[1];
+        Throwable[] failure = new Throwable[1];
+        Platform.runLater(() -> {
+            try {
+                FXMLLoader loader = new FXMLLoader(
+                        FxmlLoadingTest.class.getResource("/gui/admin-system-form.fxml"));
+                loader.setControllerFactory(type -> new AdminSystemFormController() {
+                    @Override
+                    protected void refreshData() {
+                        // FXML smoke test does not connect to MySQL.
+                    }
+                });
+                result[0] = loader.load();
+            } catch (Throwable throwable) {
+                failure[0] = throwable;
+            } finally {
+                finished.countDown();
+            }
+        });
+        assertTrue(finished.await(5, TimeUnit.SECONDS));
+        if (failure[0] != null) {
+            throw new AssertionError(
+                    "Nepavyko užkrauti /gui/admin-system-form.fxml", failure[0]);
         }
         return result[0];
     }

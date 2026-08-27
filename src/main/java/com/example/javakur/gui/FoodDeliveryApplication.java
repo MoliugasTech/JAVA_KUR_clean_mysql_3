@@ -88,6 +88,11 @@ public class FoodDeliveryApplication extends Application {
         }
     }
 
+    public void showAdminSystem() {
+        showDialog("Administratoriaus sistemos centras", "/gui/admin-system-form.fxml",
+                1320, 820, 1120, 700);
+    }
+
     public void showOwnerCatalog() {
         showDialog("Restoranų ir meniu valdymas", "/gui/owner-catalog-form.fxml",
                 1260, 800, 1080, 680);

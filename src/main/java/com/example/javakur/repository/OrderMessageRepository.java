@@ -25,6 +25,20 @@ public class OrderMessageRepository extends BaseRepository<OrderMessage, Long> {
         }
     }
 
+    public List<OrderMessage> findAllDetailed() {
+        EntityManager em = getEntityManager();
+        try {
+            return em.createQuery(
+                            "SELECT m FROM OrderMessage m "
+                                    + "JOIN FETCH m.order JOIN FETCH m.sender "
+                                    + "ORDER BY m.sentAt DESC, m.id DESC",
+                            OrderMessage.class)
+                    .getResultList();
+        } finally {
+            em.close();
+        }
+    }
+
     public boolean isOrderParticipant(Long orderId, Long userId) {
         EntityManager em = getEntityManager();
         try {

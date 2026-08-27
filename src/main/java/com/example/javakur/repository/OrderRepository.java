@@ -176,6 +176,27 @@ public class OrderRepository extends BaseRepository<FoodOrder, Long> {
         }
     }
 
+    public void deleteWithDependents(Long orderId) {
+        EntityManager em = getEntityManager();
+        try {
+            em.getTransaction().begin();
+            em.createQuery("DELETE FROM OrderMessage m WHERE m.order.id = :orderId")
+                    .setParameter("orderId", orderId).executeUpdate();
+            em.createQuery("DELETE FROM Review r WHERE r.order.id = :orderId")
+                    .setParameter("orderId", orderId).executeUpdate();
+            em.createQuery("DELETE FROM OrderItem i WHERE i.order.id = :orderId")
+                    .setParameter("orderId", orderId).executeUpdate();
+            em.createQuery("DELETE FROM FoodOrder o WHERE o.id = :orderId")
+                    .setParameter("orderId", orderId).executeUpdate();
+            em.getTransaction().commit();
+        } catch (RuntimeException exception) {
+            if (em.getTransaction().isActive()) em.getTransaction().rollback();
+            throw exception;
+        } finally {
+            em.close();
+        }
+    }
+
     public List<FoodOrder> findAllWithParticipants() {
         EntityManager em = getEntityManager();
         try {

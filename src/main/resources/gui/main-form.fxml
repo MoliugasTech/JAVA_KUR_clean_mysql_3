@@ -20,6 +20,8 @@
             <Label fx:id="roleLabel" wrapText="true" styleClass="sidebar-role"/>
             <Button fx:id="userManagementButton" text="Vartotojų valdymas"
                     maxWidth="Infinity" onAction="#handleUsers"/>
+            <Button fx:id="adminSystemButton" text="Sistemos duomenys"
+                    maxWidth="Infinity" onAction="#handleAdminSystem"/>
             <Button fx:id="ownerCatalogButton" text="Restoranai ir meniu"
                     maxWidth="Infinity" onAction="#handleOwnerCatalog"/>
             <Button fx:id="ownerOrdersButton" text="Restorano užsakymai"
