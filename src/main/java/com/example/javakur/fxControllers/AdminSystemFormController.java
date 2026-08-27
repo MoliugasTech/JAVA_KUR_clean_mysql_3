@@ -141,6 +141,7 @@ public class AdminSystemFormController {
                 new ReadOnlyStringWrapper(data.getValue().getComment()));
     }
 
+    @FXML
     protected void refreshData() {
         try {
             List<Restaurant> restaurants = adminService.listRestaurants(adminId());
