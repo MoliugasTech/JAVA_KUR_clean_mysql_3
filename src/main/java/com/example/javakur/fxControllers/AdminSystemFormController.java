@@ -64,6 +64,7 @@ public class AdminSystemFormController {
     @FXML private TableColumn<OrderMessage, String> messageSenderColumn;
     @FXML private TableColumn<OrderMessage, String> messageTimeColumn;
     @FXML private TableColumn<OrderMessage, String> messageContentColumn;
+    @FXML private TextArea messageContentEditor;
 
     @FXML private TableView<Review> reviewsTable;
     @FXML private TableColumn<Review, Long> reviewIdColumn;
@@ -84,6 +85,9 @@ public class AdminSystemFormController {
                 (observable, oldValue, value) -> refreshMenu());
         adminMenuTable.getSelectionModel().selectedItemProperty().addListener(
                 (observable, oldValue, value) -> selectMenuItem(value));
+        messagesTable.getSelectionModel().selectedItemProperty().addListener(
+                (observable, oldValue, value) -> messageContentEditor.setText(
+                        value == null ? "" : value.getContent()));
         startNewMenuItem();
         refreshData();
     }
@@ -289,6 +293,23 @@ public class AdminSystemFormController {
         } catch (RuntimeException exception) {
             showStatus("Patiekalo pašalinti nepavyko. Jei jis naudotas užsakyme, "
                     + "pažymėkite jį kaip neprieinamą.");
+        }
+    }
+
+    @FXML
+    private void saveMessage() {
+        OrderMessage message = messagesTable.getSelectionModel().getSelectedItem();
+        if (message == null) {
+            showStatus("Pasirinkite žinutę.");
+            return;
+        }
+        try {
+            adminService.updateMessage(adminId(), message.getId(),
+                    messageContentEditor.getText());
+            refreshData();
+            showStatus("Žinutė atnaujinta.");
+        } catch (RuntimeException exception) {
+            showError(exception);
         }
     }
 

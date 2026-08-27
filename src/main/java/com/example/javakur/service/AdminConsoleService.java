@@ -155,6 +155,21 @@ public class AdminConsoleService {
         return messageRepository.findAllDetailed();
     }
 
+    public OrderMessage updateMessage(Long adminId, Long messageId, String content) {
+        requireAdmin(adminId);
+        OrderMessage message = messageRepository.findById(messageId)
+                .orElseThrow(() -> new ValidationException("Žinutė nerasta"));
+        if (content == null || content.isBlank()) {
+            throw new ValidationException("Žinutė negali būti tuščia");
+        }
+        String normalized = content.trim();
+        if (normalized.length() > 2000) {
+            throw new ValidationException("Žinutė negali viršyti 2000 simbolių");
+        }
+        message.setContent(normalized);
+        return messageRepository.update(message);
+    }
+
     public void deleteMessage(Long adminId, Long messageId) {
         requireAdmin(adminId);
         if (!messageRepository.existsById(messageId)) {

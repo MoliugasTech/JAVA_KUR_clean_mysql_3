@@ -126,8 +126,15 @@
                                     <TableColumn fx:id="messageContentColumn" text="Turinys" prefWidth="720"/>
                                 </columns>
                             </TableView>
-                            <Button text="Pašalinti pasirinktą žinutę"
-                                    styleClass="danger-button" onAction="#deleteMessage"/>
+                            <Label text="Pasirinktos žinutės turinys" styleClass="field-label"/>
+                            <TextArea fx:id="messageContentEditor" prefRowCount="3"
+                                      wrapText="true"/>
+                            <HBox spacing="10">
+                                <Button text="Išsaugoti pakeitimą"
+                                        onAction="#saveMessage"/>
+                                <Button text="Pašalinti pasirinktą žinutę"
+                                        styleClass="danger-button" onAction="#deleteMessage"/>
+                            </HBox>
                         </VBox>
                     </content>
                 </Tab>
